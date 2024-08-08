@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <ListView
+        android:id="@+id/five_liaotian_listview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_weight="0"
+       >
+        <ImageView
+            android:id="@+id/five_liaotian_biaoqingbao"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@mipmap/biaoqing1"/>
+        <EditText
+            android:id="@+id/five_liaotian_edit_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@color/blue"
+            android:maxLines="2"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/five_liaotian_send"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:background="@drawable/but_yuanjiao_bantouming_blue_yellow"
+            android:text="发送"/>
+
+    </LinearLayout>
+
+</LinearLayout>

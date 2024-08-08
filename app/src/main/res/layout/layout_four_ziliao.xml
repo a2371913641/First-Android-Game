@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/four_ziliao"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ImageButton
+        android:id="@+id/four_ziliao_xingbie"
+        android:layout_width="160dp"
+        android:layout_height="170dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+       />
+
+    <TextView
+        android:id="@+id/four_ziliao_name"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:background="@color/blue" />
+    <TextView
+        android:id="@+id/four_ziliao_jingyanzhi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="5dp"
+        android:text="经验值：44444/444444" />
+
+
+    <Button
+        android:id="@+id/four_ziliao_huanyijian"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/but_jianjiao_blue_yellow"
+        android:layout_marginTop="5dp"
+        android:layout_gravity="center"
+        android:text="换衣间"/>
+
+    <Button
+        android:id="@+id/four_ziliao_onlinejiangli"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/but_jianjiao_blue_yellow"
+        android:layout_marginTop="5dp"
+        android:layout_gravity="center"
+        android:text="在线奖励"/>
+
+</LinearLayout>

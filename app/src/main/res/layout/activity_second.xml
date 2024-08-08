@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@mipmap/bj3"
+    >
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="注册账号"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:textColor="#000000"
+        android:layout_gravity="center"
+        android:layout_margin="60dp"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/two_nuber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="账号"
+            android:layout_weight="1"
+
+            />
+
+        <EditText
+            android:id="@+id/two_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="昵称"
+            android:layout_weight="1"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/two_admin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="密码"
+            android:layout_weight="1"
+
+            />
+
+        <EditText
+            android:id="@+id/two_queren_admin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="确认密码"
+            android:layout_weight="1"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="性别"
+            android:textSize="20dp"
+            />
+        <CheckBox
+            android:id="@+id/two_Boy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="男"
+            android:layout_weight="1"
+            />
+        <CheckBox
+            android:id="@+id/two_Girl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="女"
+            android:layout_weight="1"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/button_two_Back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="返回"
+            android:textSize="25sp"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/button_two_Register"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="注册"
+            android:textSize="25sp"
+            android:layout_weight="1"/>
+    </LinearLayout>
+</LinearLayout>
