@@ -1,6 +1,8 @@
 package cn.itcast.gobang.AdapterUtil;
 
 import android.content.Context;
+import android.text.Layout;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -11,11 +13,12 @@ import java.util.HashMap;
 import java.util.List;
 
 import cn.itcast.gobang.R;
+import cn.itcast.gobang.Util.Client;
 
-public class HaoYouAdapter extends BaseAdapter {
+public class YaoQinAdapter extends BaseAdapter {
     Context context;
-    List names;
-    public HaoYouAdapter(Context context,List names){
+    List<Client> names;
+    public YaoQinAdapter(Context context,List<Client> names){
         this.context=context;
         this.names=names;
 
@@ -46,7 +49,8 @@ public class HaoYouAdapter extends BaseAdapter {
         @Override
         public void onClick(View v) {
             modifyExpand(position);
-            HaoYouAdapter.this.notifyDataSetChanged();
+            Log.e("Six","点击");
+            YaoQinAdapter.this.notifyDataSetChanged();
         }
     }
 
@@ -70,12 +74,13 @@ public class HaoYouAdapter extends BaseAdapter {
         if(expandMap.get(position)==null){
             expandMap.put(position,false);
         }
-        View xuanzeView=View.inflate(context,R.layout.layout_haoyou_xuanze,null);
+        View xuanzeView=View.inflate(context,R.layout.layout_yaoqing_xuanze,null);
         if(converView==null) {
             View view = View.inflate(context, R.layout.layout_haoyou_item,null);
             TextView name=(TextView) view.findViewById(R.id.four_haoyou_name);
-
-            name.setText(names.get(position).toString());
+//            name.getLayoutParams().width=LinearLayout.LayoutParams.MATCH_PARENT;
+//            name.setLayoutParams(name.getLayoutParams());
+            name.setText(names.get(position).getName());
             LinearLayout layout=view.findViewById(R.id.four_haoyou_xuanze);
             if(isExpand(position)){
                 layout.addView(xuanzeView);
@@ -83,7 +88,7 @@ public class HaoYouAdapter extends BaseAdapter {
             converView=view;
         }else {
             TextView name=(TextView) converView.findViewById(R.id.four_haoyou_name);
-            name.setText(names.get(position).toString());
+            name.setText(names.get(position).getName());
             LinearLayout layout=converView.findViewById(R.id.four_haoyou_xuanze);
             if(isExpand(position)&&layout.getChildCount()==0){
                 layout.addView(xuanzeView);
@@ -102,8 +107,8 @@ public class HaoYouAdapter extends BaseAdapter {
         // 1. 展示haoyou_item
         // 2. 设置TextView
         // 3. 根据点击次数设置是否动态添加view
-       convertView = showItem(position, convertView);
-       convertView.setOnClickListener(new IL(position));
-       return convertView;
+        convertView = showItem(position, convertView);
+        convertView.setOnClickListener(new IL(position));
+        return convertView;
     }
 }

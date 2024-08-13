@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
 
     <Button
-        android:id="@+id/five_dating_client_xuanze_sixin"
+        android:id="@+id/yaoqing_xuanze_sixin"
         android:layout_width="60dp"
         android:layout_height="wrap_content"
         android:background="@drawable/yuanjiao_jvxin"
         android:textSize="20dp"
-        android:text="私信"/>
+        android:text="私信"
+        style="?android:attr/buttonBarButtonStyle" />
 
     <Button
-        android:id="@+id/five_dating_client_xuanze_siliao"
+        android:id="@+id/yaoqing_xuanze_siliao"
         android:layout_width="60dp"
         android:layout_height="wrap_content"
         android:background="@drawable/yuanjiao_jvxin"
@@ -21,17 +22,9 @@
         android:layout_marginLeft="5dp"
         android:text="私聊"/>
 
-    <Button
-        android:id="@+id/five_dating_client_xuanze_zhaota"
-        android:layout_width="60dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/yuanjiao_jvxin"
-        android:textSize="20dp"
-        android:layout_marginLeft="5dp"
-        android:text="找Ta"/>
 
     <Button
-        android:id="@+id/four_haoyou_xuanze_ziliao"
+        android:id="@+id/yaoqing_xuanze_ziliao"
         android:layout_width="60dp"
         android:layout_height="wrap_content"
         android:textSize="20dp"
@@ -39,15 +32,16 @@
         android:layout_marginLeft="5dp"
         android:text="资料"/>
 
-
     <Button
-        android:id="@+id/four_haoyou_xuanze_shanchu"
+        android:id="@+id/yaoqing_xuanze_yaoqing"
         android:layout_width="60dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/yuanjiao_jvxin_red"
         android:textSize="20dp"
+        android:background="@drawable/yuanjiao_jvxin"
         android:layout_marginLeft="5dp"
-        android:text="删除"/>
+        android:text="邀请"/>
+
+
 
 
 </LinearLayout>

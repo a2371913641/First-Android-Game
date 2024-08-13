@@ -20,7 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.itcast.gobang.AdapterUtil.BiaoQingBaoAdapter;
+import cn.itcast.gobang.AdapterUtil.HaoYouAdapter;
 import cn.itcast.gobang.AdapterUtil.RoomClientRecycleAdapter;
+import cn.itcast.gobang.AdapterUtil.YaoQinAdapter;
 import cn.itcast.gobang.Util.Client;
 import cn.itcast.gobang.Util.GongGongZiYuan;
 import cn.itcast.gobang.Util.LiaoTianAdapter;
@@ -31,6 +33,7 @@ import cn.itcast.gobang.Util.SocketClient;
 public class SixRoomActivity extends AppCompatActivity {
 
     List<Client> clientList;
+    List<Client> haoyouList;
     Button haoyou,liaotian,diange,yaoqing,sendLiaotianButton;
     ImageView biaoqingbaoButton;
     LinearLayout tihuanLayout;
@@ -40,14 +43,17 @@ public class SixRoomActivity extends AppCompatActivity {
     TextView roomNameTextView;
     View haoyouView,liaotianView,diangeView,yaoqingView,biaoqingbaoView;
     LiaoTianAdapter liaoTianAdapter;
+    HaoYouAdapter haoYouAdapter;
+    YaoQinAdapter yaoqingAdapter;
     List<LiaoTianXiaoXi> liaotianXiaoxiList;
     List<Integer> biaoqingbaolist;
-    ListView liaotianListView;
+    ListView liaotianListView,yaoqingListView;
     EditText liaotianEditText;
     AlertDialog.Builder biaoqingbaoDialog;
     RecyclerView biaoqingbaoRecyclerView;
     BiaoQingBaoAdapter biaoQingBaoAdapter;
     ReceiveListener receiveListener;
+    List<Client> yaoqingList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +72,8 @@ public class SixRoomActivity extends AppCompatActivity {
     private void initView(){
         gongGongZiYuan=new GongGongZiYuan();
         clientList=new ArrayList<>();
+        yaoqingList=new ArrayList<>();
+        haoyouList=new ArrayList<>();
         biaoqingbaoDialog=new AlertDialog.Builder(SixRoomActivity.this);
         tihuanLayout=(LinearLayout)findViewById(R.id.six_tihuan_linearlayout);
         roomNameTextView=(TextView) findViewById(R.id.six_roonname_textview);
@@ -79,6 +87,10 @@ public class SixRoomActivity extends AppCompatActivity {
         yaoqing=(Button) findViewById(R.id.six_yaoqing_button);
         liaotianXiaoxiList=new ArrayList<>();
         biaoqingbaoView=View.inflate(SixRoomActivity.this,R.layout.layout_five_baioqingbao_dialog,null);
+        yaoqingView=View.inflate(SixRoomActivity.this,R.layout.layout_four_haoyou,null);
+        yaoqingAdapter=new YaoQinAdapter(SixRoomActivity.this,yaoqingList);
+        yaoqingListView=yaoqingView.findViewById(R.id.four_haoyou_listview);
+        yaoqingListView.setAdapter(yaoqingAdapter);
         liaotianView=View.inflate(SixRoomActivity.this,R.layout.layout_five_dating_liaotian,null);
         liaoTianAdapter=new LiaoTianAdapter(SixRoomActivity.this,R.layout.layout_five_dating_liaotian_item,liaotianXiaoxiList);
         liaotianListView=liaotianView.findViewById(R.id.five_liaotian_listview);
@@ -136,7 +148,10 @@ public class SixRoomActivity extends AppCompatActivity {
         yaoqing.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                tihuanLayout.removeAllViews();
+                tihuanLayout.addView(yaoqingView);
+                yaoqingView.getLayoutParams().width=LinearLayout.LayoutParams.MATCH_PARENT;
+                yaoqingView.setLayoutParams(yaoqingView.getLayoutParams());
             }
         });
 
@@ -181,8 +196,8 @@ public class SixRoomActivity extends AppCompatActivity {
                             clientList.remove(clientList.get(i));
                         }
 
-                        for(int i=1;i<strings.length;i=i+4){
-                            clientList.add(new Client(strings[i], strings[i+1], strings[i+2], Integer.parseInt(strings[i+3])));
+                        for(int i=1;i<strings.length;i=i+5){
+                            clientList.add(new Client(strings[i], strings[i+1], strings[i+2], Integer.parseInt(strings[i+3]),Boolean.parseBoolean(strings[i+4])));
                         }
                         runOnUiThread(new Runnable() {
                             @Override
@@ -219,6 +234,31 @@ public class SixRoomActivity extends AppCompatActivity {
                         });
                         break;
 
+                    case"setyaoqingList:":
+                        for(int i=yaoqingList.size()-1;i>=0;i--){
+                            yaoqingList.remove(i);
+                        }
+                        Log.e("Six","yaoqingList="+yaoqingList.size());
+
+                        Log.e("Six","strings.size="+strings.length);
+                        for(int i=1;i<strings.length;i=i+4){
+                            yaoqingList.add(new Client(strings[i],strings[i+1],strings[i+2],Integer.parseInt(strings[i+3]),Boolean.parseBoolean(strings[i+4])));
+                        }
+
+                        for(Client client:yaoqingList){
+                            Log.e("Six","name="+client.getName());
+                        }
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                yaoqingAdapter.notifyDataSetChanged();
+                            }
+                        });
+
+                        break;
+
+                    case"setHaoyou:":
+
                     default:
                         Log.e("SixRoomActivity","default:data="+data);
                 }
@@ -227,36 +267,12 @@ public class SixRoomActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Perform any final cleanup before an activity is destroyed.  This can
-     * happen either because the activity is finishing (someone called
-     * {@link #finish} on it), or because the system is temporarily destroying
-     * this instance of the activity to save space.  You can distinguish
-     * between these two scenarios with the {@link #isFinishing} method.
-     *
-     * <p><em>Note: do not count on this method being called as a place for
-     * saving data! For example, if an activity is editing data in a content
-     * provider, those edits should be committed in either {@link #onPause} or
-     * {@link #onSaveInstanceState}, not here.</em> This method is usually implemented to
-     * free resources like threads that are associated with an activity, so
-     * that a destroyed activity does not leave such things around while the
-     * rest of its application is still running.  There are situations where
-     * the system will simply kill the activity's hosting process without
-     * calling this method (or any others) in it, so it should not be used to
-     * do things that are intended to remain around after the process goes
-     * away.
-     *
-     * <p><em>Derived classes must call through to the super class's
-     * implementation of this method.  If they do not, an exception will be
-     * thrown.</em></p>
-     *
-     * @see #onPause
-     * @see #onStop
-     * @see #finish
-     * @see #isFinishing
-     */
+
+
     @Override
     protected void onDestroy() {
+
+        gongGongZiYuan.sendMsg("tuichuRoom:_");
         if(SocketClient.sInst!=null){
             SocketClient.sInst.destroyLintener(receiveListener);
         }

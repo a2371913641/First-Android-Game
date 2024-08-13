@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if(strings[0].equals("setClient:")){
-                    GongGongZiYuan.client=new Client(strings[1],strings[2],strings[3],Integer.parseInt(strings[4]));
+                    GongGongZiYuan.client=new Client(strings[1],strings[2],strings[3],Integer.parseInt(strings[4]),Boolean.parseBoolean(strings[5]));
                 }
             }
         });

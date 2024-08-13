@@ -232,9 +232,10 @@ public class FifthActivity extends AppCompatActivity {
                     Log.e("FifthActivity","clients="+clients.size());
 
                     Log.e("FifthActivity","strings.size="+strings.length);
-                    for(int i=1;i<strings.length;i=i+4){
+                    for(int i=1;i<strings.length;i=i+5){
                         Log.e("FifthActivity","i="+i);
-                        clients.add(new Client(strings[i],strings[i+1],strings[i+2],Integer.parseInt(strings[i+3])));
+                        clients.add(new Client(strings[i],strings[i+1],strings[i+2],Integer.parseInt(strings[i+3]),Boolean.parseBoolean(strings[i+4])));
+                        Log.e("FifthActivity","client.name="+strings[i+1]+",client.onLine="+strings[i+4]);
                     }
                     runOnUiThread(new Runnable() {
                         @Override
@@ -290,6 +291,7 @@ public class FifthActivity extends AppCompatActivity {
                 String data=liaotianEditView.getText().toString();
                 if(!data.equals("")){
                     msgSend("liaotianxiaoxi:/n"+data+"/n0"+"_");
+                    Log.e("Send","liaotianxiaoxi:/n"+data+"/n0"+"_");
 
                 }
             }

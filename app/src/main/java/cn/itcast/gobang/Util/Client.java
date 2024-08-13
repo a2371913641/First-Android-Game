@@ -6,12 +6,14 @@ import java.util.List;
 public class Client {
     String name,zhanghao,xinbie;
     int image;
+    Boolean onLine;
     List<Client> haoyouList=new ArrayList<>();
     public Client(String name,String zhanghao,String xinbie,int image){
         this.name=name;
         this.zhanghao=zhanghao;
         this.xinbie=xinbie;
         this.image=image;
+//        this.onLine=onLine;
     }
 
     public String getZhanghao(){
@@ -28,5 +30,9 @@ public class Client {
 
     public int getImage(){
         return image;
+    }
+
+    public Boolean getOnLine(){
+        return onLine;
     }
 }
