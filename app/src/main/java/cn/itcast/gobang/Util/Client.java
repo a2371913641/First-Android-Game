@@ -8,12 +8,12 @@ public class Client {
     int image;
     Boolean onLine;
     List<Client> haoyouList=new ArrayList<>();
-    public Client(String name,String zhanghao,String xinbie,int image){
+    public Client(String name,String zhanghao,String xinbie,int image,Boolean onLine){
         this.name=name;
         this.zhanghao=zhanghao;
         this.xinbie=xinbie;
         this.image=image;
-//        this.onLine=onLine;
+        this.onLine=onLine;
     }
 
     public String getZhanghao(){

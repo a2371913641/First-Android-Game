@@ -20,6 +20,18 @@ import cn.itcast.gobang.Util.Client;
 public class RoomClientRecycleAdapter extends RecyclerView.Adapter<RoomClientRecycleAdapter.RoomClientHolder> {
     Context context;
     List<Client> clientList;
+    private ClickInterface clickInterface;
+
+    //点击事件
+    public void setOnclick(ClickInterface clickInterface){
+        this.clickInterface=clickInterface;
+    }
+
+    public interface ClickInterface{
+        void onImageClick(int position);
+    }
+
+    //点击事件
 
     public RoomClientRecycleAdapter(Context context,List<Client> clients){
         this.context=context;
@@ -27,7 +39,7 @@ public class RoomClientRecycleAdapter extends RecyclerView.Adapter<RoomClientRec
     }
 
 
-    class RoomClientHolder extends RecyclerView.ViewHolder {
+    static class RoomClientHolder extends RecyclerView.ViewHolder {
         View view;
         ImageView clientImageView;
         TextView nameTextView;
@@ -42,7 +54,7 @@ public class RoomClientRecycleAdapter extends RecyclerView.Adapter<RoomClientRec
     @Override
     public RoomClientHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view=View.inflate(context,R.layout.layout_six_room_client,null);
-        RoomClientHolder holder=new RoomClientHolder(view);
+        RoomClientHolder holder= new RoomClientHolder(view);
         return holder;
     }
 
@@ -51,6 +63,16 @@ public class RoomClientRecycleAdapter extends RecyclerView.Adapter<RoomClientRec
         holder.nameTextView.setText(clientList.get(position).getName());
         holder.clientImageView.setImageResource(clientList.get(position).getImage());
         Log.e("Six","clientList.get(position).getImage()="+clientList.get(position).getImage());
+        holder.clientImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e("ClientAdapter","OnClick");
+                if(clickInterface!=null){
+                    Log.e("ClientAdapter","clickInterface!=null");
+                    clickInterface.onImageClick(position);
+                }
+            }
+        });
     }
 
 

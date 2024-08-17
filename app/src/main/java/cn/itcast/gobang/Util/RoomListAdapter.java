@@ -3,6 +3,7 @@ package cn.itcast.gobang.Util;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -50,7 +51,8 @@ public class RoomListAdapter extends BaseAdapter {
         TextView roomName=(TextView) convertView.findViewById(R.id.five_room_name_textview);
         TextView roonType=(TextView) convertView.findViewById(R.id.five_room_type);
         Button jinru=(Button) convertView.findViewById(R.id.five_room_jinru_button);
-        roomHaoMa.setText(""+position);
+        Log.e("RoomListAdapter","room.haoma="+roomList.get(position).roomHaoMa);
+        roomHaoMa.setText(""+roomList.get(position).roomHaoMa);
         roomName.setText(roomList.get(position).roomName);
         roonType.setText(roomList.get(position).roomType);
         jinru.setOnClickListener(new JinRu());

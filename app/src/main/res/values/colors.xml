@@ -14,4 +14,5 @@
     <color name="bantoumin_blue">#8099cccc</color>
     <color name="blue2">#FF66ccff</color>
     <color name="red">#ff0000</color>
+    <color name="grey">#333333</color>
 </resources>

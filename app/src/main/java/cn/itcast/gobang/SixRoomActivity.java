@@ -5,9 +5,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -29,12 +36,14 @@ import cn.itcast.gobang.Util.LiaoTianAdapter;
 import cn.itcast.gobang.Util.LiaoTianXiaoXi;
 import cn.itcast.gobang.Util.Room;
 import cn.itcast.gobang.Util.SocketClient;
+import cn.itcast.gobang.Util.WriterThread;
 
 public class SixRoomActivity extends AppCompatActivity {
 
     List<Client> clientList;
     List<Client> haoyouList;
-    Button haoyou,liaotian,diange,yaoqing,sendLiaotianButton;
+    Boolean isFalse;
+    Button haoyou,liaotian,diange,yaoqing,sendLiaotianButton,addFriendButton,siLiaoButton,qinglvzhengshuButton;
     ImageView biaoqingbaoButton;
     LinearLayout tihuanLayout;
     RoomClientRecycleAdapter roomClientRecycleAdapter;
@@ -47,13 +56,16 @@ public class SixRoomActivity extends AppCompatActivity {
     YaoQinAdapter yaoqingAdapter;
     List<LiaoTianXiaoXi> liaotianXiaoxiList;
     List<Integer> biaoqingbaolist;
-    ListView liaotianListView,yaoqingListView;
+    ListView liaotianListView,yaoqingListView,haoyouListView;
     EditText liaotianEditText;
     AlertDialog.Builder biaoqingbaoDialog;
     RecyclerView biaoqingbaoRecyclerView;
     BiaoQingBaoAdapter biaoQingBaoAdapter;
     ReceiveListener receiveListener;
     List<Client> yaoqingList;
+//    WindowManager windowManager;
+    View dialogView;
+    Dialog clickImageDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,15 +77,20 @@ public class SixRoomActivity extends AppCompatActivity {
         setBiaoQingBaoList();
         setLiaotian();
         setTihuanLayout();
-
+        ImageClick();
 
     }
 
     private void initView(){
+//        windowManager=getWindowManager();
         gongGongZiYuan=new GongGongZiYuan();
         clientList=new ArrayList<>();
         yaoqingList=new ArrayList<>();
         haoyouList=new ArrayList<>();
+        haoYouAdapter=new HaoYouAdapter(this,haoyouList);
+        haoyouView=View.inflate(this,R.layout.layout_four_haoyou,null);
+        haoyouListView=haoyouView.findViewById(R.id.four_haoyou_listview);
+        haoyouListView.setAdapter(haoYouAdapter);
         biaoqingbaoDialog=new AlertDialog.Builder(SixRoomActivity.this);
         tihuanLayout=(LinearLayout)findViewById(R.id.six_tihuan_linearlayout);
         roomNameTextView=(TextView) findViewById(R.id.six_roonname_textview);
@@ -103,6 +120,12 @@ public class SixRoomActivity extends AppCompatActivity {
         biaoqingbaoRecyclerView=biaoqingbaoView.findViewById(R.id.biaoqingbao_RecyclerList);
         biaoqingbaoRecyclerView.setLayoutManager(new GridLayoutManager(this,8));
         biaoqingbaoRecyclerView.setAdapter(biaoQingBaoAdapter);
+        dialogView= View.inflate(SixRoomActivity.this,R.layout.layout_room_client_clickitem,null);
+        addFriendButton=dialogView.findViewById(R.id.addFriend);
+        qinglvzhengshuButton=dialogView.findViewById(R.id.qinglvzhengshu);
+        siLiaoButton=dialogView.findViewById(R.id.siLiao);
+        clickImageDialog=new Dialog(SixRoomActivity.this);
+        clickImageDialog.setContentView(dialogView);
     }
 
     private void setBiaoQingBaoList(){
@@ -123,7 +146,10 @@ public class SixRoomActivity extends AppCompatActivity {
         haoyou.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                tihuanLayout.removeAllViews();
+                tihuanLayout.addView(haoyouView);
+                haoyouView.getLayoutParams().height=LinearLayout.LayoutParams.MATCH_PARENT;
+                haoyouView.setLayoutParams(haoyouView.getLayoutParams());
             }
         });
 
@@ -241,7 +267,7 @@ public class SixRoomActivity extends AppCompatActivity {
                         Log.e("Six","yaoqingList="+yaoqingList.size());
 
                         Log.e("Six","strings.size="+strings.length);
-                        for(int i=1;i<strings.length;i=i+4){
+                        for(int i=1;i<strings.length;i=i+5){
                             yaoqingList.add(new Client(strings[i],strings[i+1],strings[i+2],Integer.parseInt(strings[i+3]),Boolean.parseBoolean(strings[i+4])));
                         }
 
@@ -257,7 +283,75 @@ public class SixRoomActivity extends AppCompatActivity {
 
                         break;
 
-                    case"setHaoyou:":
+                    case"setHaoYouList:":
+                        for(int i=haoyouList.size()-1;i>=0;i--){
+                            haoyouList.remove(haoyouList.get(i));
+                        }
+
+                        for(int i=1;i<strings.length;i=i+5){
+                            haoyouList.add(new Client(strings[i],strings[i+1],strings[i+2],Integer.parseInt(strings[i+3]),Boolean.parseBoolean(strings[i+4])));
+                        }
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                haoYouAdapter.notifyDataSetChanged();
+                            }
+                        });
+
+                        break;
+                    case"serverAddFriend:":
+                        AlertDialog.Builder builder=new AlertDialog.Builder(SixRoomActivity.this);
+                        builder.setTitle(strings[1]+"请求添加您为好友！");
+                        builder.setMessage("您是否同意？");
+                        builder.setPositiveButton("同意", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                gongGongZiYuan.sendMsg("ClientTwoAgree:/n"+strings[2]+"_");
+                                Log.e("Six","ClientTwoAgree:/n"+strings[2]+"_");
+                            }
+                        });
+
+                        builder.setNegativeButton("拒绝", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                gongGongZiYuan.sendMsg("ClientTwoRefuse:/n"+strings[2]+"_");
+                            }
+                        });
+                       runOnUiThread(new Runnable() {
+                           @Override
+                           public void run() {
+                               builder.create();
+                               builder.show();
+                           }
+                       });
+                        break;
+
+                    case"ServerTwoAgree:":
+                        AlertDialog.Builder builder2=new AlertDialog.Builder(SixRoomActivity.this);
+                        builder2.setMessage("对方已同意你的好友申请！");
+                        gongGongZiYuan.sendMsg("ClientRogerTwoAgree:/n"+strings[1]+"_");
+                        builder2.setNeutralButton("确定",null);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                builder2.create();
+                                builder2.show();
+                            }
+                        });
+                        break;
+
+                    case"ServerTwoRefuse:":
+                        AlertDialog.Builder builder1=new AlertDialog.Builder(SixRoomActivity.this);
+                        builder1.setMessage("对方拒绝了你的好友申请！");
+                        builder1.setNeutralButton("确定",null);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                builder1.create();
+                                builder1.show();
+                            }
+                        });
+                        break;
 
                     default:
                         Log.e("SixRoomActivity","default:data="+data);
@@ -267,7 +361,94 @@ public class SixRoomActivity extends AppCompatActivity {
         });
     }
 
+    private void ImageClick(){
+        roomClientRecyclerView.post(new Runnable() {
+            @Override
+            public void run() {
+                roomClientRecycleAdapter.setOnclick(new RoomClientRecycleAdapter.ClickInterface() {
+                    @Override
+                    public void onImageClick(int position) {
+                        Log.e("Six","Click");
+                        clickImageDialog(position);
+                    }
+                });
+            }
+        });
+    }
 
+    private Boolean returnIsFalse(){
+        if(isFalse==null || !isFalse){
+            isFalse=true;
+        }else{
+            isFalse=false;
+        }
+        Log.e("Six","isFalse="+isFalse);
+        return isFalse;
+    }
+
+//    private void floatingWindow(int position){
+//        View view= View.inflate(SixRoomActivity.this,R.layout.layout_room_client_clickitem,null);
+//        WindowManager.LayoutParams windowParam= new WindowManager.LayoutParams();
+//        windowParam.height=WindowManager.LayoutParams.WRAP_CONTENT;
+//        windowParam.width=WindowManager.LayoutParams.WRAP_CONTENT;
+//        if(returnIsFalse()){
+//            windowManager.addView(view,windowParam);
+//            Log.e("Six","add");
+//        }else{
+//            Log.e("Six","remove");
+//            windowManager.removeViewImmediate(view);
+//        }
+//    }
+
+    private void clickImage(int position){
+
+        if(returnIsFalse()){
+
+            Log.e("Six","add");
+        }else{
+            Log.e("Six","remove");
+
+        }
+    }
+
+    private void clickImageDialog(int position){
+
+        Window dialogWindow=clickImageDialog.getWindow();
+        WindowManager.LayoutParams lp=dialogWindow.getAttributes();
+        dialogWindow.setGravity(Gravity.LEFT|Gravity.TOP);
+        Log.e("Six","position="+position);
+        lp.x=300*(position+1);
+        lp.y=480*(position/3);
+        lp.height=620;
+        lp.width=470;
+        dialogWindow.setAttributes(lp);
+        setDialogClick(position);
+        clickImageDialog.create();
+        clickImageDialog.show();
+
+    }
+
+    private void setDialogClick(int position){
+        addFriendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gongGongZiYuan.sendMsg("ClientAddFriend:/n"+position+"_");
+            }
+        });
+    }
+
+    /**
+     * Called when the activity has detected the user's press of the back
+     * key. The {@link #getOnBackPressedDispatcher() OnBackPressedDispatcher} will be given a
+     * chance to handle the back button before the default behavior of
+     * {@link Activity#onBackPressed()} is invoked.
+     *
+     * @see #getOnBackPressedDispatcher()
+     */
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 
     @Override
     protected void onDestroy() {

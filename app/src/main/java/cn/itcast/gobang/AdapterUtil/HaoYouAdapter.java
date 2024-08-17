@@ -1,29 +1,35 @@
 package cn.itcast.gobang.AdapterUtil;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.text.style.BackgroundColorSpan;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.ColorLong;
+
 import java.util.HashMap;
 import java.util.List;
 
 import cn.itcast.gobang.R;
+import cn.itcast.gobang.Util.Client;
 
 public class HaoYouAdapter extends BaseAdapter {
     Context context;
-    List names;
-    public HaoYouAdapter(Context context,List names){
+    List<Client> clientList;
+    public HaoYouAdapter(Context context,List<Client> clients){
         this.context=context;
-        this.names=names;
+        this.clientList=clients;
 
     }
 
     @Override
     public int getCount() {
-        return names.size();
+        return clientList.size();
     }
 
 
@@ -75,7 +81,7 @@ public class HaoYouAdapter extends BaseAdapter {
             View view = View.inflate(context, R.layout.layout_haoyou_item,null);
             TextView name=(TextView) view.findViewById(R.id.four_haoyou_name);
 
-            name.setText(names.get(position).toString());
+            name.setText(clientList.get(position).getName());
             LinearLayout layout=view.findViewById(R.id.four_haoyou_xuanze);
             if(isExpand(position)){
                 layout.addView(xuanzeView);
@@ -83,7 +89,7 @@ public class HaoYouAdapter extends BaseAdapter {
             converView=view;
         }else {
             TextView name=(TextView) converView.findViewById(R.id.four_haoyou_name);
-            name.setText(names.get(position).toString());
+            name.setText(clientList.get(position).getName());
             LinearLayout layout=converView.findViewById(R.id.four_haoyou_xuanze);
             if(isExpand(position)&&layout.getChildCount()==0){
                 layout.addView(xuanzeView);
@@ -91,6 +97,10 @@ public class HaoYouAdapter extends BaseAdapter {
                 layout.removeAllViews();
             }
         }
+        if(!clientList.get(position).getOnLine()){
+           converView.setBackgroundColor(context.getResources().getColor(R.color.grey));
+        }
+
         return converView;
     }
 

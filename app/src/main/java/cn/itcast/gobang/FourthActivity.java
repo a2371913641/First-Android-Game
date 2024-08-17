@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.itcast.gobang.AdapterUtil.DaTingAdapter;
+import cn.itcast.gobang.Util.Client;
 import cn.itcast.gobang.Util.GongGongZiYuan;
 import cn.itcast.gobang.AdapterUtil.HaoYouAdapter;
 import cn.itcast.gobang.Util.SocketClient;
@@ -33,7 +34,7 @@ public class FourthActivity extends AppCompatActivity {
     ListView haoyouListView,datingListView;
     DaTingAdapter daTingAdapter;
     GongGongZiYuan gongGongZiYuan;
-    List haoyoulist;
+    List<Client> haoyouList;
     int[] dating={0,0,0,0,0,0,0,0};
     View ziliaoView,haoyouView,dadiangView,xinxiangView,jiazuView;
     ReceiveListener receiveListener;
@@ -48,7 +49,7 @@ public class FourthActivity extends AppCompatActivity {
     }
 
     private void initView(){
-        haoyoulist=new ArrayList<String>();
+        haoyouList=new ArrayList<Client>();
         haoyou=(Button) findViewById(R.id.four_haoyou);
         ziliao=(Button) findViewById(R.id.four_ziliao);
         xinxiang=(Button) findViewById(R.id.four_xinxiang);
@@ -146,15 +147,18 @@ public class FourthActivity extends AppCompatActivity {
                     });
                     break;
 
-                    case "haoyou:":
-                        for (int i = 1; i < strings.length; i++) {
-                            haoyoulist.add(strings[i]);
+                    case "setHaoYouList:":
+                        for(int i=haoyouList.size()-1;i>=0;i--){
+                            haoyouList.remove(haoyouList.get(i));
                         }
-                        Log.e("FourActivity", "haoyoulist.size=" + haoyoulist.size());
+
+                        for(int i=1;i<strings.length;i=i+5){
+                            haoyouList.add(new Client(strings[i],strings[i+1],strings[i+2],Integer.parseInt(strings[i+3]),Boolean.parseBoolean(strings[i+4])));
+                        }
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                haoyouListView.setAdapter(new HaoYouAdapter(FourthActivity.this, haoyoulist));
+                                haoyouListView.setAdapter(new HaoYouAdapter(FourthActivity.this, haoyouList));
                             }
                         });
                         break;
