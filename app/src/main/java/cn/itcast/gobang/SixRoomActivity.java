@@ -353,6 +353,27 @@ public class SixRoomActivity extends AppCompatActivity {
                         });
                         break;
 
+                    case "ServerZiLiao:":
+                        //"ServerZiLiao:/n+"+client.name+"/n"+client.onLine+"/n"+client.nowAtHall+"/n"
+                        //+client.atRoom.roomHaoMa+"/n"+client.atRoom.roomName+"/n"+client.atRoom.roomType+"/n"+!client.atRoom.roomAdmin.equals(" ")+"_"
+                        AlertDialog.Builder builder3=new AlertDialog.Builder(SixRoomActivity.this);
+                        builder3.setTitle("找Ta");
+                        builder3.setMessage("用户名称:"+strings[1]+"\n"+"是否在线:"+strings[2]+"\n"+"大厅名称:大厅"+strings[3]+"\n"+"房间号码:"+strings[4]+
+                                "\n"+"房间名称:"+strings[5]+"\n房间模式:"+strings[6]+"\n有无密码:"+strings[7]);
+                        builder3.setPositiveButton("进入房间", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        });
+                        builder3.setNegativeButton("取消",null);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                builder3.create().show();
+                            }
+                        });
+                        break;
                     default:
                         Log.e("SixRoomActivity","default:data="+data);
                 }

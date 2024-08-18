@@ -28,6 +28,7 @@ import java.util.List;
 
 import cn.itcast.gobang.AdapterUtil.BiaoQingBaoAdapter;
 import cn.itcast.gobang.AdapterUtil.DatingClientAdapter;
+import cn.itcast.gobang.AdapterUtil.HaoYouAdapter;
 import cn.itcast.gobang.Util.Client;
 import cn.itcast.gobang.Util.GongGongZiYuan;
 import cn.itcast.gobang.Util.LiaoTianAdapter;
@@ -43,7 +44,7 @@ public class FifthActivity extends AppCompatActivity {
     String yonghuName;
     List<LiaoTianXiaoXi> liaoTianXiaoXiList;
     List<Integer> biaoqingbaolist;
-    List<Client> clients;
+    List<Client> clients,haoyouList;
     Handler whandler;
     TextView datingName;
     Button liaotian_btn,haoyou_btn,yonghu_btn,liaotianSend_Btn,createRoom;
@@ -61,6 +62,7 @@ public class FifthActivity extends AppCompatActivity {
     List<Room> roomList;
     DatingClientAdapter datingClientAdapter;
     ReceiveListener receiveListener;
+    HaoYouAdapter haoYouAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,6 +88,7 @@ public class FifthActivity extends AppCompatActivity {
         Log.e("FifthActivity","onCreate.initView()");
         roomList=new ArrayList<>();
         clients=new ArrayList<>();
+        haoyouList=new ArrayList<>();
         Log.e("fifthActivity","initView.roomlist="+roomList.size());
         gongGongZiYuan=new GongGongZiYuan();
         liaoTianXiaoXiList=new ArrayList<>();
@@ -101,6 +104,9 @@ public class FifthActivity extends AppCompatActivity {
         roomListView.setAdapter(roomListAdapter);
         liaotian_layout=View.inflate(FifthActivity.this,R.layout.layout_five_dating_liaotian,null);
         haoyou_layout=View.inflate(FifthActivity.this,R.layout.layout_five_dating_haoyou,null);
+        ListView haoyouListView=haoyou_layout.findViewById(R.id.five_haouyou_listview);
+        haoYouAdapter=new HaoYouAdapter(this,haoyouList);
+        haoyouListView.setAdapter(haoYouAdapter);
         yonghu_layout=View.inflate(FifthActivity.this,R.layout.layout_five_client,null);
         datingClient=(ListView) yonghu_layout.findViewById(R.id.dating_client);
         datingClientAdapter=new DatingClientAdapter(FifthActivity.this,clients);
@@ -244,9 +250,41 @@ public class FifthActivity extends AppCompatActivity {
                         }
                     });
 
+                }else if(strings[0].equals("setHaoYouList:")){
+                    for (int i = haoyouList.size() - 1; i >= 0; i--) {
+                        haoyouList.remove(haoyouList.get(i));
+                    }
+
+                    for (int i = 1; i < strings.length; i = i + 5) {
+                        haoyouList.add(new Client(strings[i], strings[i + 1], strings[i + 2], Integer.parseInt(strings[i + 3]), Boolean.parseBoolean(strings[i + 4])));
+                    }
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            haoYouAdapter.notifyDataSetChanged();
+                        }
+                    });
+                }else if(strings[0].equals("ServerZiLiao:")) {
+                    //"ServerZiLiao:/n+"+client.name+"/n"+client.onLine+"/n"+client.nowAtHall+"/n"
+                    //+client.atRoom.roomHaoMa+"/n"+client.atRoom.roomName+"/n"+client.atRoom.roomType+"/n"+!client.atRoom.roomAdmin.equals(" ")+"_"
+                    AlertDialog.Builder builder3 = new AlertDialog.Builder(FifthActivity.this);
+                    builder3.setTitle("找Ta");
+                    builder3.setMessage("用户名称:"+strings[1]+"\n"+"是否在线:"+strings[2]+"\n"+"大厅名称:大厅"+strings[3]+"\n"+"房间号码:"+strings[4]+
+                            "\n"+"房间名称:"+strings[5]+"\n房间模式:"+strings[6]+"\n有无密码:"+strings[7]);
+                    builder3.setPositiveButton("进入房间", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+                    builder3.setNegativeButton("取消", null);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            builder3.create().show();
+                        }
+                    });
                 }
-
-
             }
         });
     }
