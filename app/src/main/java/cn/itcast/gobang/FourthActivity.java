@@ -165,6 +165,7 @@ public class FourthActivity extends AppCompatActivity {
                         });
                         break;
                     case "jinrudating:":
+                        Log.e("Four","jinruDating--------");
                         Intent intent = new Intent(FourthActivity.this, FifthActivity.class);
                         intent.putExtra("datinghaoma",Integer.parseInt(strings[1]));
                         intent.putExtra("yonghuname",ziliaoName.getText());
@@ -190,10 +191,22 @@ public class FourthActivity extends AppCompatActivity {
                         builder3.setTitle("找Ta");
                         builder3.setMessage("用户名称:"+strings[1]+"\n"+"是否在线:"+strings[2]+"\n"+"大厅名称:大厅"+strings[3]+"\n"+"房间号码:"+strings[4]+
                                 "\n"+"房间名称:"+strings[5]+"\n房间模式:"+strings[6]+"\n有无密码:"+strings[7]);
-                        builder3.setPositiveButton("进入房间", new DialogInterface.OnClickListener() {
+                        builder3.setPositiveButton("进入Ta所在大厅", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-
+                                if(strings[3].equals("null")){
+                                    AlertDialog.Builder builder=new AlertDialog.Builder(FourthActivity.this);
+                                    builder.setMessage("Ta不在任何大厅内，无法跟随！");
+                                    builder.setNegativeButton("确认",null);
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            builder.create().show();
+                                        }
+                                    });
+                                }else{
+                                    gongGongZiYuan.sendMsg("jinrudating:/n"+strings[3]+"_");
+                                }
                             }
                         });
                         builder3.setNegativeButton("取消",null);
