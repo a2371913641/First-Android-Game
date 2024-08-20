@@ -357,6 +357,7 @@ public class FifthActivity extends AppCompatActivity {
                 if(!data.equals("")){
                     msgSend("liaotianxiaoxi:/n"+data+"/n0"+"_");
                     Log.e("Send","liaotianxiaoxi:/n"+data+"/n0"+"_");
+                    liaotianEditView.setText("");
 
                 }
             }

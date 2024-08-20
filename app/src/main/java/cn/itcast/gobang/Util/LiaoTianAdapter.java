@@ -47,12 +47,19 @@ public class LiaoTianAdapter extends BaseAdapter {
         }
         TextView textView=convertView.findViewById(R.id.five_liaotian_item_textview);
         ImageView imageView=convertView.findViewById(R.id.five_liaotian_item_imageview);
-
+        textView.setTextColor(context.getResources().getColor(R.color.white));
 
         if(!liaoTianXiaoXiList.get(position).wenzi.equals(" ")&&liaoTianXiaoXiList.get(position).wenzi!=null) {
-
-            textView.setText(liaoTianXiaoXiList.get(position).wenzi);
-            textView.setVisibility(View.VISIBLE);
+            if(liaoTianXiaoXiList.get(position).getWenzi().substring(0,3).equals("[私]")){
+                //"[私]"+clientClass.name+":"+strings1[2]
+                Log.e("Six","wenzi="+liaoTianXiaoXiList.get(position).wenzi+"Image="+liaoTianXiaoXiList.get(position).biaoqing);
+                textView.setText(liaoTianXiaoXiList.get(position).wenzi);
+                textView.setTextColor(context.getResources().getColor(R.color.green));
+                textView.setVisibility(View.VISIBLE);
+            }else{
+                textView.setText(liaoTianXiaoXiList.get(position).wenzi);
+                textView.setVisibility(View.VISIBLE);
+            }
         }else{
             textView.setText("");
             textView.setVisibility(View.GONE);

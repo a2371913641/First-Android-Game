@@ -58,7 +58,7 @@ public class SixRoomActivity extends AppCompatActivity {
     List<Integer> biaoqingbaolist;
     ListView liaotianListView,yaoqingListView,haoyouListView;
     EditText liaotianEditText;
-    AlertDialog.Builder biaoqingbaoDialog;
+    AlertDialog.Builder biaoqingbaoDialog,tuichuRoomDialog;
     RecyclerView biaoqingbaoRecyclerView;
     BiaoQingBaoAdapter biaoQingBaoAdapter;
     ReceiveListener receiveListener;
@@ -194,8 +194,10 @@ public class SixRoomActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String data=liaotianEditText.getText().toString();
                 if(!data.equals("")){
-                    gongGongZiYuan.sendMsg("InTheRoomliaotianxiaoxi:/n"+data+"/n0"+"_");
 
+                    gongGongZiYuan.sendMsg("InTheRoomliaotianxiaoxi:/n"+data+"/n0_");
+                    liaotianEditText.setText("");
+                    Log.e("Six","data="+data);
                 }
             }
         });
@@ -245,7 +247,9 @@ public class SixRoomActivity extends AppCompatActivity {
                         break;
                     case "InTheRoomliaotianxiaoxi:":
                         Log.e("Six","Strings[1]="+strings[1]+"Strings[2]="+strings[2]);
-                        liaotianXiaoxiList.add(new LiaoTianXiaoXi(strings[1],Integer.parseInt(strings[2])));
+
+                            liaotianXiaoxiList.add(new LiaoTianXiaoXi(strings[1],Integer.parseInt(strings[2])));
+
                         for(LiaoTianXiaoXi xiaoXi:liaotianXiaoxiList){
                             Log.e("Six","ltxxi="+xiaoXi.getWenzi()+xiaoXi.getBiaoqing());
                         }
@@ -428,30 +432,87 @@ public class SixRoomActivity extends AppCompatActivity {
 
     private void clickImageDialog(int position){
 
-        Window dialogWindow=clickImageDialog.getWindow();
-        WindowManager.LayoutParams lp=dialogWindow.getAttributes();
-        dialogWindow.setGravity(Gravity.LEFT|Gravity.TOP);
-        Log.e("Six","position="+position);
-        lp.x=300*(position+1);
-        lp.y=480*(position/3);
-        lp.height=620;
-        lp.width=470;
-        dialogWindow.setAttributes(lp);
-        setDialogClick(position);
-        clickImageDialog.create();
-        clickImageDialog.show();
+       if(GongGongZiYuan.client.getZhanghao().equals(clientList.get(position).getZhanghao())){
+           Log.e("Six","=========");
+
+           clickImageDialog.setContentView(dialogView);
+           Window dialogWindow=clickImageDialog.getWindow();
+           WindowManager.LayoutParams lp=dialogWindow.getAttributes();
+           dialogWindow.setGravity(Gravity.LEFT|Gravity.TOP);
+           Log.e("Six","position="+position);
+           lp.x=300*(position+1);
+           lp.y=680*(position/3);
+           lp.height=270;
+           lp.width=470;
+           dialogWindow.setAttributes(lp);
+           setDialogClick(position);
+           clickImageDialog.create();
+           clickImageDialog.show();
+           siLiaoButton.setVisibility(View.GONE);
+           addFriendButton.setVisibility(View.GONE);
+       }else{
+           Log.e("Six","!!!!!!!====");
+           clickImageDialog.setContentView(dialogView);
+           Window dialogWindow=clickImageDialog.getWindow();
+           WindowManager.LayoutParams lp=dialogWindow.getAttributes();
+           dialogWindow.setGravity(Gravity.LEFT|Gravity.TOP);
+           Log.e("Six","position="+position);
+           lp.x=300*(position+1);
+           lp.y=680*(position/3);
+           lp.height=620;
+           lp.width=470;
+           dialogWindow.setAttributes(lp);
+           setDialogClick(position);
+           clickImageDialog.create();
+           clickImageDialog.show();
+       }
 
     }
 
+//    private View setViewLucency(int[] ints){
+//        addFriendButton.setVisibility(View.VISIBLE);
+//        siLiaoButton.setVisibility(View.VISIBLE);
+//        qinglvzhengshuButton.setVisibility(View.VISIBLE);
+//        for(int i=0;i<ints.length;i++){
+//            switch(ints[i]){
+//                case 1:addFriendButton.setVisibility(View.INVISIBLE);
+//                break;
+//            }
+//        }
+//        return dialogView;
+//    }
+
     private void setDialogClick(int position){
+        siLiaoButton.setVisibility(View.VISIBLE);
+        addFriendButton.setVisibility(View.VISIBLE);
         addFriendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 gongGongZiYuan.sendMsg("ClientAddFriend:/n"+position+"_");
             }
         });
+
+        siLiaoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                liaotianEditText.setText("@"+clientList.get(position).getName()+":");
+            }
+        });
     }
 
+    private void setTuichuRoomDialog(){
+        tuichuRoomDialog=new AlertDialog.Builder(SixRoomActivity.this);
+        tuichuRoomDialog.setTitle("提示");
+        tuichuRoomDialog.setMessage("退出房间并返回大厅？");
+        tuichuRoomDialog.setNegativeButton("取消",null);
+        tuichuRoomDialog.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                gongGongZiYuan.sendMsg("tuichuRoom:_");
+            }
+        });
+        tuichuRoomDialog.create();
+    }
     /**
      * Called when the activity has detected the user's press of the back
      * key. The {@link #getOnBackPressedDispatcher() OnBackPressedDispatcher} will be given a
@@ -467,7 +528,6 @@ public class SixRoomActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-
         gongGongZiYuan.sendMsg("tuichuRoom:_");
         if(SocketClient.sInst!=null){
             SocketClient.sInst.destroyLintener(receiveListener);

@@ -1,7 +1,7 @@
 package cn.itcast.gobang.Util;
 
 public class LiaoTianXiaoXi {
-    String wenzi;
+    public String wenzi;
     int biaoqing;
     public LiaoTianXiaoXi(String s,int i){
         this.wenzi=s;
