@@ -24,6 +24,7 @@ public class RoomClientRecycleAdapter extends RecyclerView.Adapter<RoomClientRec
     List<Client> clientList;
     private ClickInterface clickInterface;
 
+
     //点击事件
     public void setOnclick(ClickInterface clickInterface){
         this.clickInterface=clickInterface;

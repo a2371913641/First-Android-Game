@@ -24,7 +24,6 @@ import cn.itcast.gobang.Util.GongGongZiYuan;
 public class HaoYouAdapter extends BaseAdapter {
     Context context;
     List<Client> clientList;
-    View xuanzeView;
     GongGongZiYuan gongGongZiYuan=new GongGongZiYuan();
     public HaoYouAdapter(Context context,List<Client> clients){
         this.context=context;
@@ -81,7 +80,7 @@ public class HaoYouAdapter extends BaseAdapter {
         if(expandMap.get(position)==null){
             expandMap.put(position,false);
         }
-        xuanzeView=View.inflate(context,R.layout.layout_haoyou_xuanze,null);
+        View xuanzeView=View.inflate(context,R.layout.layout_haoyou_xuanze,null);
         if(converView==null) {
             View view = View.inflate(context, R.layout.layout_haoyou_item,null);
             TextView name=(TextView) view.findViewById(R.id.four_haoyou_name);
@@ -89,7 +88,7 @@ public class HaoYouAdapter extends BaseAdapter {
             name.setText(clientList.get(position).getName());
             LinearLayout layout=view.findViewById(R.id.four_haoyou_xuanze);
             if(isExpand(position)&&clientList.get(position).getOnLine()){
-                layout.addView(xuanzeView);
+                layout.addView(setXuanze(xuanzeView,position));
             }
             converView=view;
         }else {
@@ -97,7 +96,7 @@ public class HaoYouAdapter extends BaseAdapter {
             name.setText(clientList.get(position).getName());
             LinearLayout layout=converView.findViewById(R.id.four_haoyou_xuanze);
             if(isExpand(position)&&layout.getChildCount()==0&&clientList.get(position).getOnLine()){
-                layout.addView(xuanzeView);
+                layout.addView(setXuanze(xuanzeView,position));
             }else if(!isExpand(position)&&layout.getChildCount()!=0){
                 layout.removeAllViews();
             }
@@ -111,14 +110,26 @@ public class HaoYouAdapter extends BaseAdapter {
         return converView;
     }
 
-    public void setXuanze(int position){
+    public View setXuanze(View xuanzeView,int position){
         Button zhaoTa=xuanzeView.findViewById(R.id.four_haoyou_xuanze_zhaota);
+        Button siLiao=xuanzeView.findViewById(R.id.four_haoyou_xuanze_siliao);
+        Button siXin=xuanzeView.findViewById(R.id.four_haoyou_xuanze_sixin);
+
         zhaoTa.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                gongGongZiYuan.sendMsg("ClientZiLiao:/n"+clientList.get(position).getZhanghao()+"_");
             }
         });
+
+        siLiao.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gongGongZiYuan.sendMsg("ClientSiLiao:/n"+clientList.get(position).getZhanghao()+"_");
+            }
+        });
+
+        return xuanzeView;
     }
 
     @Override // position = 5
@@ -131,7 +142,6 @@ public class HaoYouAdapter extends BaseAdapter {
         // 3. 根据点击次数设置是否动态添加view
        convertView = showItem(position, convertView);
        convertView.setOnClickListener(new IL(position));
-       setXuanze(position);
        return convertView;
     }
 }

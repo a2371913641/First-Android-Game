@@ -17,11 +17,16 @@ import cn.itcast.gobang.Util.LiaoTianXiaoXi;
 public class LiaoTianAdapter extends BaseAdapter {
     Context context;
     List<LiaoTianXiaoXi> liaoTianXiaoXiList;
+    private SetSiLiao setSiLiao;
     int layout;
     public LiaoTianAdapter(Context context, int layout,List<LiaoTianXiaoXi> list){
         this.context=context;
         this.layout=layout;
         liaoTianXiaoXiList=list;
+    }
+
+    public void setClickSetSiLiao(SetSiLiao setSiLiao){
+        this.setSiLiao=setSiLiao;
     }
 
     public int getCount() {
@@ -71,8 +76,30 @@ public class LiaoTianAdapter extends BaseAdapter {
         }else {
             imageView.setVisibility(View.GONE);
         }
+
+        String[] strings=liaoTianXiaoXiList.get(position).getWenzi().split(":");
+        if(!strings[0].substring(3).equals(GongGongZiYuan.client.name)){
+            textView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String[] strings=liaoTianXiaoXiList.get(position).getWenzi().split(":");
+                    String s="@"+strings[0].substring(3)+":";
+                    setSiLiao.setSiLiaoSendExit(s);
+                }
+            });
+        }
         return convertView;
     }
+
+
+
+     public interface SetSiLiao{
+             void setSiLiaoSendExit(String s);
+     }
+
+
+
+
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {

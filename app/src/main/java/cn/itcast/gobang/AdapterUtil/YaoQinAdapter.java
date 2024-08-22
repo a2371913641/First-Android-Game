@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -14,10 +15,13 @@ import java.util.List;
 
 import cn.itcast.gobang.R;
 import cn.itcast.gobang.Util.Client;
+import cn.itcast.gobang.Util.GongGongZiYuan;
 
 public class YaoQinAdapter extends BaseAdapter {
     Context context;
     List<Client> names;
+    View xuanzeView;
+    GongGongZiYuan gongGongZiYuan=new GongGongZiYuan();
     public YaoQinAdapter(Context context,List<Client> names){
         this.context=context;
         this.names=names;
@@ -74,7 +78,7 @@ public class YaoQinAdapter extends BaseAdapter {
         if(expandMap.get(position)==null){
             expandMap.put(position,false);
         }
-        View xuanzeView=View.inflate(context,R.layout.layout_yaoqing_xuanze,null);
+        xuanzeView=View.inflate(context,R.layout.layout_yaoqing_xuanze,null);
         if(converView==null) {
             View view = View.inflate(context, R.layout.layout_haoyou_item,null);
             TextView name=(TextView) view.findViewById(R.id.four_haoyou_name);
@@ -99,6 +103,20 @@ public class YaoQinAdapter extends BaseAdapter {
         return converView;
     }
 
+    private void setXuanZeView(int position){
+
+        Button siLiao=xuanzeView.findViewById(R.id.yaoqing_xuanze_siliao);
+        Button siXin=xuanzeView.findViewById(R.id.yaoqing_xuanze_sixin);
+
+
+        siLiao.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gongGongZiYuan.sendMsg("ClientSiLiao:/n"+names.get(position).getZhanghao()+"_");
+            }
+        });
+    }
+
     @Override // position = 5
     public View getView(int position, View convertView, ViewGroup parent) {
         // 1. 展示 - 根据条目状态展示
@@ -109,6 +127,7 @@ public class YaoQinAdapter extends BaseAdapter {
         // 3. 根据点击次数设置是否动态添加view
         convertView = showItem(position, convertView);
         convertView.setOnClickListener(new IL(position));
+        setXuanZeView(position);
         return convertView;
     }
 }

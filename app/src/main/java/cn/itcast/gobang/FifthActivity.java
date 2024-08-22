@@ -124,6 +124,21 @@ public class FifthActivity extends AppCompatActivity {
         biaoQingBaoAdapter=new BiaoQingBaoAdapter(this,biaoqingbaolist,"liaotianxiaoxi:");
         biaoqingbaoRecyclerView.setLayoutManager(new GridLayoutManager(this,8));
         biaoqingbaoRecyclerView.setAdapter(biaoQingBaoAdapter);
+        setLiaoTianAdapter();
+    }
+
+    private void setLiaoTianAdapter(){
+        liaotianAdapter.setClickSetSiLiao(new LiaoTianAdapter.SetSiLiao() {
+            @Override
+            public void setSiLiaoSendExit(String s) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        liaotianEditView.setText(s);
+                    }
+                });
+            }
+        });
     }
 
     private void setCreateRoom(){
@@ -311,6 +326,19 @@ public class FifthActivity extends AppCompatActivity {
                             }
                         });
                     }
+                }else if(strings[0].equals("ServerSiLiao:")){
+                    String s="@"+strings[1]+":";
+                    liaotianEditView.setText(s);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            tihuan.removeAllViews();
+                            tihuan.addView(liaotian_layout);
+                            LayoutParams lp = liaotian_layout.getLayoutParams();
+                            lp.height = LinearLayout.LayoutParams.MATCH_PARENT;
+                            liaotian_layout.setLayoutParams(lp);
+                        }
+                    });
                 }
             }
         });

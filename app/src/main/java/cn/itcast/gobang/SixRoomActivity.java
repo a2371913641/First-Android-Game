@@ -126,6 +126,7 @@ public class SixRoomActivity extends AppCompatActivity {
         siLiaoButton=dialogView.findViewById(R.id.siLiao);
         clickImageDialog=new Dialog(SixRoomActivity.this);
         clickImageDialog.setContentView(dialogView);
+        setLiaoTianAdapter();
     }
 
     private void setBiaoQingBaoList(){
@@ -140,6 +141,20 @@ public class SixRoomActivity extends AppCompatActivity {
             biaoqingbaolist.add(R.mipmap.biaoqing8);
 
         }
+    }
+
+    private void setLiaoTianAdapter(){
+        liaoTianAdapter.setClickSetSiLiao(new LiaoTianAdapter.SetSiLiao() {
+            @Override
+            public void setSiLiaoSendExit(String s) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        liaotianEditText.setText(s);
+                    }
+                });
+            }
+        });
     }
 
     private void setTihuanLayout(){
@@ -369,6 +384,20 @@ public class SixRoomActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 builder3.create().show();
+                            }
+                        });
+                        break;
+
+                    case"ServerSiLiao:":
+                        String s="@"+strings[1]+":";
+                        liaotianEditText.setText(s);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                tihuanLayout.removeAllViews();
+                                tihuanLayout.addView(liaotianView);
+                                liaotianView.getLayoutParams().height=LinearLayout.LayoutParams.MATCH_PARENT;
+                                liaotianView.setLayoutParams(liaotianView.getLayoutParams());
                             }
                         });
                         break;
