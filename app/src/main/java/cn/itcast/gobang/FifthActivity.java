@@ -339,6 +339,29 @@ public class FifthActivity extends AppCompatActivity {
                             liaotian_layout.setLayoutParams(lp);
                         }
                     });
+                }else if(strings[0].equals("ServerYaoQin:")){
+                    AlertDialog.Builder yaoqingDialog=new AlertDialog.Builder(FifthActivity.this);
+                    yaoqingDialog.setTitle("提示");
+                    yaoqingDialog.setMessage(strings[1]+"邀请您进入"+"["+strings[2]+"]"+strings[3]+",\n"+"是否同意？");
+                    yaoqingDialog.setNegativeButton("拒绝", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            gongGongZiYuan.sendMsg("ClientTwoRefuseYaoQin:/n"+strings[1]+"_");
+                        }
+                    });
+                    yaoqingDialog.setPositiveButton("同意", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            gongGongZiYuan.sendMsg("ClientFollowRoom:/n" + strings[2] + "_");
+                        }
+                    });
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            yaoqingDialog.create().show();
+                        }
+                    });
                 }
             }
         });

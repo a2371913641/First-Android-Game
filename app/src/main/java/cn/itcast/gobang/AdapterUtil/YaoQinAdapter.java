@@ -87,7 +87,7 @@ public class YaoQinAdapter extends BaseAdapter {
             name.setText(names.get(position).getName());
             LinearLayout layout=view.findViewById(R.id.four_haoyou_xuanze);
             if(isExpand(position)){
-                layout.addView(xuanzeView);
+                layout.addView(setXuanZeView(xuanzeView,position));
             }
             converView=view;
         }else {
@@ -95,7 +95,7 @@ public class YaoQinAdapter extends BaseAdapter {
             name.setText(names.get(position).getName());
             LinearLayout layout=converView.findViewById(R.id.four_haoyou_xuanze);
             if(isExpand(position)&&layout.getChildCount()==0){
-                layout.addView(xuanzeView);
+                layout.addView(setXuanZeView(xuanzeView,position));
             }else if(!isExpand(position)&&layout.getChildCount()!=0){
                 layout.removeAllViews();
             }
@@ -103,11 +103,11 @@ public class YaoQinAdapter extends BaseAdapter {
         return converView;
     }
 
-    private void setXuanZeView(int position){
+    private View setXuanZeView(View xuanzeView,int position){
 
         Button siLiao=xuanzeView.findViewById(R.id.yaoqing_xuanze_siliao);
         Button siXin=xuanzeView.findViewById(R.id.yaoqing_xuanze_sixin);
-
+        Button yaoQin=xuanzeView.findViewById(R.id.yaoqing_xuanze_yaoqing);
 
         siLiao.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,6 +115,17 @@ public class YaoQinAdapter extends BaseAdapter {
                 gongGongZiYuan.sendMsg("ClientSiLiao:/n"+names.get(position).getZhanghao()+"_");
             }
         });
+
+        yaoQin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gongGongZiYuan.sendMsg("ClientYaoQin:/n"+names.get(position).getZhanghao()+"_");
+            }
+        });
+
+
+
+        return xuanzeView;
     }
 
     @Override // position = 5
@@ -127,7 +138,6 @@ public class YaoQinAdapter extends BaseAdapter {
         // 3. 根据点击次数设置是否动态添加view
         convertView = showItem(position, convertView);
         convertView.setOnClickListener(new IL(position));
-        setXuanZeView(position);
         return convertView;
     }
 }

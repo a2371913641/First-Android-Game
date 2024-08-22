@@ -280,6 +280,7 @@ public class SixRoomActivity extends AppCompatActivity {
                         break;
 
                     case"setyaoqingList:":
+                        Log.e("Six","setyaoqingList:");
                         for(int i=yaoqingList.size()-1;i>=0;i--){
                             yaoqingList.remove(i);
                         }
@@ -401,6 +402,16 @@ public class SixRoomActivity extends AppCompatActivity {
                             }
                         });
                         break;
+                    case "ServerTwoRefuseYaoQin:":
+                        AlertDialog.Builder refuseYaoQingdialog=new AlertDialog.Builder(SixRoomActivity.this);
+                        refuseYaoQingdialog.setTitle("提示");
+                        refuseYaoQingdialog.setMessage(strings[1]+"拒绝了你的邀请！");
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                refuseYaoQingdialog.create().show();
+                            }
+                        });
                     default:
                         Log.e("SixRoomActivity","default:data="+data);
                 }
