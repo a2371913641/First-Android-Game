@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import cn.itcast.gobang.Util.GongGongZiYuan;
+import cn.itcast.gobang.Util.SiXin;
 import cn.itcast.gobang.Util.SocketClient;
 import cn.itcast.gobang.Util.WriterThread;
 

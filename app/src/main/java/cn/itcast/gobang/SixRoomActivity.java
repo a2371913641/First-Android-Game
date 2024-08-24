@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -35,6 +36,7 @@ import cn.itcast.gobang.Util.GongGongZiYuan;
 import cn.itcast.gobang.Util.LiaoTianAdapter;
 import cn.itcast.gobang.Util.LiaoTianXiaoXi;
 import cn.itcast.gobang.Util.Room;
+import cn.itcast.gobang.Util.SiXin;
 import cn.itcast.gobang.Util.SocketClient;
 import cn.itcast.gobang.Util.WriterThread;
 
@@ -157,11 +159,20 @@ public class SixRoomActivity extends AppCompatActivity {
         });
     }
 
+    private void setViewDefaultColor(){
+        haoyou.setBackgroundResource(R.color.blue);
+        liaotian.setBackgroundResource(R.color.blue);
+        yaoqing.setBackgroundResource(R.color.blue);
+
+    }
+
     private void setTihuanLayout(){
         haoyou.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 tihuanLayout.removeAllViews();
+                setViewDefaultColor();
+                haoyou.setBackgroundResource(R.color.yellow1);
                 tihuanLayout.addView(haoyouView);
                 haoyouView.getLayoutParams().height=LinearLayout.LayoutParams.MATCH_PARENT;
                 haoyouView.setLayoutParams(haoyouView.getLayoutParams());
@@ -172,6 +183,8 @@ public class SixRoomActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 tihuanLayout.removeAllViews();
+                setViewDefaultColor();
+                liaotian.setBackgroundResource(R.color.yellow1);
                 tihuanLayout.addView(liaotianView);
                 liaotianView.getLayoutParams().height=LinearLayout.LayoutParams.MATCH_PARENT;
                 liaotianView.setLayoutParams(liaotianView.getLayoutParams());
@@ -182,6 +195,9 @@ public class SixRoomActivity extends AppCompatActivity {
         diange.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                tihuanLayout.removeAllViews();
+                setViewDefaultColor();
+                diange.setBackgroundResource(R.color.yellow1);
 
             }
         });
@@ -190,6 +206,8 @@ public class SixRoomActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 tihuanLayout.removeAllViews();
+                setViewDefaultColor();
+                yaoqingView.setBackgroundResource(R.color.yellow1);
                 tihuanLayout.addView(yaoqingView);
                 yaoqingView.getLayoutParams().width=LinearLayout.LayoutParams.MATCH_PARENT;
                 yaoqingView.setLayoutParams(yaoqingView.getLayoutParams());
@@ -412,6 +430,7 @@ public class SixRoomActivity extends AppCompatActivity {
                                 refuseYaoQingdialog.create().show();
                             }
                         });
+
                     default:
                         Log.e("SixRoomActivity","default:data="+data);
                 }

@@ -35,6 +35,7 @@ import cn.itcast.gobang.Util.LiaoTianAdapter;
 import cn.itcast.gobang.Util.LiaoTianXiaoXi;
 import cn.itcast.gobang.Util.Room;
 import cn.itcast.gobang.Util.RoomListAdapter;
+import cn.itcast.gobang.Util.SiXin;
 import cn.itcast.gobang.Util.SocketClient;
 import cn.itcast.gobang.Util.WriterThread;
 
@@ -367,11 +368,19 @@ public class FifthActivity extends AppCompatActivity {
         });
     }
 
+    private void setViewDefaultColor(){
+        haoyou_btn.setBackgroundResource(R.color.blue);
+        liaotian_btn.setBackgroundResource(R.color.blue);
+        yonghu_btn.setBackgroundResource(R.color.blue);
+
+    }
     private void setTihuan(){
         liaotian_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 tihuan.removeAllViews();
+                setViewDefaultColor();
+               liaotian_btn.setBackgroundResource(R.color.yellow1);
                 tihuan.addView(liaotian_layout);
                 LayoutParams lp = liaotian_layout.getLayoutParams();
                 lp.height = LinearLayout.LayoutParams.MATCH_PARENT;
@@ -382,6 +391,8 @@ public class FifthActivity extends AppCompatActivity {
         haoyou_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                setViewDefaultColor();
+                haoyou_btn.setBackgroundResource(R.color.yellow1);
                 tihuan.removeAllViews();
                 tihuan.addView(haoyou_layout);
             }
@@ -390,12 +401,15 @@ public class FifthActivity extends AppCompatActivity {
         yonghu_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                setViewDefaultColor();
+                yonghu_btn.setBackgroundResource(R.color.yellow1);
                 tihuan.removeAllViews();
                 tihuan.addView(yonghu_layout);
             }
         });
 
         tihuan.addView(liaotian_layout);
+        liaotian_btn.setBackgroundResource(R.color.yellow1);
         liaotian_layout.getLayoutParams().height = LinearLayout.LayoutParams.MATCH_PARENT;
         liaotian_layout.setLayoutParams(liaotian_layout.getLayoutParams());
     }

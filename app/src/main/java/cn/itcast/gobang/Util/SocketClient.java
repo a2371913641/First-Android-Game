@@ -37,7 +37,9 @@ public class SocketClient extends Thread {
         try {
             //172.22.243.12
             //192.168.100.88
-
+            //192.168.137.81
+            //172.22.60.128
+            //192.168.53.56
             socket = new Socket("192.168.100.88", 8088);
             Log.e("SocketClient","衣联网");
             readerThread=new ReaderThread(socket,listenerList);

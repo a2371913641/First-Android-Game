@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/but_yuanjiao_yellow"
+    android:orientation="vertical">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/four_xinxiang_item_ToOrFrom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:textSize="20dp"
+            android:layout_marginLeft="5dp"
+            android:background="@drawable/yuanjiao_bule"/>
+        <TextView
+            android:id="@+id/four_xinxiang_item_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+
+            android:textSize="20dp"
+            android:background="@drawable/yuanjiao_bule"/>
+        <TextView
+            android:id="@+id/four_xinxiang_item_huifu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:text="回复"
+            android:textSize="20dp"
+            android:background="@drawable/but_yuanjiao_blue_yellow"/>
+
+        <TextView
+            android:id="@+id/four_xinxiang_item_shanchu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:text="删除"
+            android:textSize="20dp"
+            android:background="@drawable/but_yuanjiao_blue_yellow"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="vertical"
+        android:background="@drawable/yuanjiao_white">
+        <TextView
+            android:id="@+id/four_xinxiang_item_content"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:textSize="30dp"
+            android:textColor="@color/black"
+            />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                />
+            <TextView
+                android:id="@+id/four_xinxiang_item_content_time"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:textColor="@color/grey"
+                android:textSize="10dp"
+                android:text=""
+                />
+
+
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

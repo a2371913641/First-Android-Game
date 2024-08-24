@@ -6,6 +6,6 @@
     <solid android:color="@color/red"/>
 
     <!-- 设置弧度 -->
-    <corners android:radius="20dp" />
+    <corners android:radius="10dp" />
 
 </shape>

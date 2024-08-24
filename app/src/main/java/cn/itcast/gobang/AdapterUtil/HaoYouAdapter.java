@@ -129,6 +129,13 @@ public class HaoYouAdapter extends BaseAdapter {
             }
         });
 
+        siXin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gongGongZiYuan.sendMsg("ClientSiXin:/n"+clientList.get(position).getZhanghao()+"_");
+            }
+        });
+
         return xuanzeView;
     }
 

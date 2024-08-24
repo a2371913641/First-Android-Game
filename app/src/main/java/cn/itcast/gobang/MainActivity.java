@@ -22,6 +22,7 @@ import cn.itcast.gobang.Util.Client;
 import cn.itcast.gobang.Util.ClientAccount;
 import cn.itcast.gobang.Util.GongGongZiYuan;
 import cn.itcast.gobang.Util.IOUtil;
+import cn.itcast.gobang.Util.SiXin;
 import cn.itcast.gobang.Util.SocketClient;
 import cn.itcast.gobang.Util.WriterThread;
 
@@ -49,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         ziYuan = new GongGongZiYuan();
         setContentView(R.layout.activity_main);
-
         setClientAccount();
         initView();
         ZhuCe();
@@ -106,6 +106,8 @@ public class MainActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+//                            IOUtil io=new IOUtil();
+//                            io.deleteFile(new File(getFilesDir(),GongGongZiYuan.client.getName()+"的信箱.txt").getAbsolutePath());
 
                             Toast.makeText(MainActivity.this, strings[1],Toast.LENGTH_SHORT).show();
                         }
@@ -128,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
                 if(strings[0].equals("setClient:")){
                     GongGongZiYuan.client=new Client(strings[1],strings[2],strings[3],Integer.parseInt(strings[4]),Boolean.parseBoolean(strings[5]));
                 }
+
             }
         });
     }
@@ -167,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(SocketClient.sInst==null){
                     SocketClient.sInst=new SocketClient();
+                    Log.e("Main","sInst="+SocketClient.sInst.toString());
                     SocketClient.sInst.start();
                 }
                 setReceiveListener();

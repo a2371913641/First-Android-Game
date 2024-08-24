@@ -123,6 +123,13 @@ public class YaoQinAdapter extends BaseAdapter {
             }
         });
 
+        siXin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gongGongZiYuan.sendMsg("ClientSiXin:/n"+names.get(position).getZhanghao()+"_");
+            }
+        });
+
 
 
         return xuanzeView;

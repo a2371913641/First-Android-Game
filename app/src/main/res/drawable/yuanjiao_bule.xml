@@ -3,7 +3,7 @@
     android:shape="rectangle">
 
     <!-- 实心长方形 -->
-    <solid android:color="@color/bantoumin_blue"/>
+    <solid android:color="@color/blue" />
 
     <!-- 设置弧度 -->
     <corners android:radius="10dp" />
