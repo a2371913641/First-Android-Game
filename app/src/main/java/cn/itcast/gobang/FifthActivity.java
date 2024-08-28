@@ -23,7 +23,10 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import cn.itcast.gobang.AdapterUtil.BiaoQingBaoAdapter;
@@ -31,6 +34,7 @@ import cn.itcast.gobang.AdapterUtil.DatingClientAdapter;
 import cn.itcast.gobang.AdapterUtil.HaoYouAdapter;
 import cn.itcast.gobang.Util.Client;
 import cn.itcast.gobang.Util.GongGongZiYuan;
+import cn.itcast.gobang.Util.IOUtil;
 import cn.itcast.gobang.Util.LiaoTianAdapter;
 import cn.itcast.gobang.Util.LiaoTianXiaoXi;
 import cn.itcast.gobang.Util.Room;
@@ -40,6 +44,7 @@ import cn.itcast.gobang.Util.SocketClient;
 import cn.itcast.gobang.Util.WriterThread;
 
 public class FifthActivity extends AppCompatActivity {
+    String XINXIANG="的信箱.txt";
     Intent oldintent;
     int datinghaoma;
     String yonghuName;
@@ -64,18 +69,19 @@ public class FifthActivity extends AppCompatActivity {
     DatingClientAdapter datingClientAdapter;
     ReceiveListener receiveListener;
     HaoYouAdapter haoYouAdapter;
+    IOUtil io;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fifth);
-
         oldintent=getIntent();
         datinghaoma=oldintent.getIntExtra("datinghaoma",100);
         yonghuName=oldintent.getStringExtra("yonghuname");
-        setListener();
+
         initView();
         Log.e("fifthActivity","initView后.roomlist="+roomList.size());
         setBiaoQingBaoList();
+        setListener();
         gongGongZiYuan.sendMsg("4-5:/n_");
         setCreateRoom();
         setTihuan();
@@ -85,6 +91,7 @@ public class FifthActivity extends AppCompatActivity {
 
 
     private void initView(){
+        io=new IOUtil();
         whandler= WriterThread.wHandler;
         Log.e("FifthActivity","onCreate.initView()");
         roomList=new ArrayList<>();
@@ -247,7 +254,7 @@ public class FifthActivity extends AppCompatActivity {
                         }
                     });
                 }else if(strings[0].equals("datingClient:")){
-                    Log.e("FifthActivity","datingClient:");
+                    Log.e("FifthActivity","datingClient:="+data);
                     for(int i=clients.size()-1;i>=0;i--){
                         clients.remove(i);
                     }
@@ -334,7 +341,9 @@ public class FifthActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             tihuan.removeAllViews();
+                            setViewDefaultColor();
                             tihuan.addView(liaotian_layout);
+                            liaotian_btn.setBackgroundResource(R.color.yellow1);
                             LayoutParams lp = liaotian_layout.getLayoutParams();
                             lp.height = LinearLayout.LayoutParams.MATCH_PARENT;
                             liaotian_layout.setLayoutParams(lp);
@@ -363,9 +372,79 @@ public class FifthActivity extends AppCompatActivity {
                             yaoqingDialog.create().show();
                         }
                     });
+                }else if(strings[0].equals("ServerSiXin:")) {
+                        View view=View.inflate(FifthActivity.this, R.layout.layout_sixin_dialogview, null);
+                        AlertDialog.Builder sixinDialogBuiler = new AlertDialog.Builder(FifthActivity.this);
+                        sixinDialogBuiler.setView(view);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                sixinDialogBuiler.create();
+                                AlertDialog alertDialog=sixinDialogBuiler.show();
+                                setSixinDialogView(view,alertDialog, strings[1]);
+                            }
+                        });
+                }else if(strings[0].equals("ServerSendSiXin:")){
+                        Log.e("FifctActivity","s="+strings[0]+strings[1]+strings[2]);
+                        GongGongZiYuan.siXins.add(new SiXin("From",strings[1],strings[2],strings[3]));
+
+                        io.outputFile(new File(getFilesDir(),GongGongZiYuan.client.getName()+XINXIANG).getAbsolutePath(),"From"+"/n"+strings[1]+"/n"+strings[2]+"/n"+strings[3]+"/n",true);
+
                 }
             }
         });
+    }
+
+    private View setSixinDialogView(View sixinDialogView,AlertDialog alertDialog,String name){
+        Button sixin_qvxiao_button,sixin_send_button;
+        EditText sixin_editText;
+        TextView nameXinXiang=(TextView)sixinDialogView.findViewById(R.id.sixin_title);
+        sixin_send_button=(Button) sixinDialogView.findViewById(R.id.sixin_dialog_send_button);
+        sixin_editText=(EditText) sixinDialogView.findViewById(R.id.dialog_sixin_content_editText);
+        sixin_qvxiao_button=(Button) sixinDialogView.findViewById(R.id.sixin_dialog_qvxiao_button);
+        nameXinXiang.setText("发送私信给:"+name);
+        sixin_qvxiao_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+            }
+        });
+        sixin_send_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(sixin_editText.getText().toString().equals("")){
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(FifthActivity.this,"请输入内容！",Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }else{
+                    Date date = new Date();
+                    SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+                    gongGongZiYuan.sendMsg("ClientSendSiXin:/n"+name+"/n"+sixin_editText.getText()+"/n"+formatter.format(date)+"_");
+                    GongGongZiYuan.siXins.add(new SiXin("To",name,sixin_editText.getText().toString(),formatter.format(date)));
+                    IOUtil io=new IOUtil();
+                    io.outputFile(new File(getFilesDir(),GongGongZiYuan.client.getName()+XINXIANG).getAbsolutePath(),"To"+"/n"+name+"/n"+sixin_editText.getText().toString()+"/n"+formatter.format(date)+"/n",true);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(FifthActivity.this,"发送成功！",Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            alertDialog.dismiss();
+                        }
+                    });
+                }
+            }
+        });
+
+
+        return sixinDialogView;
     }
 
     private void setViewDefaultColor(){
@@ -444,7 +523,22 @@ public class FifthActivity extends AppCompatActivity {
         whandler.sendMessage(msg);
     }
 
+    /**
+     * Dispatch onPause() to fragments.
+     */
+    @Override
+    protected void onPause() {
+        super.onPause();
+        SocketClient.sInst.allDestoryListener();
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+       if(SocketClient.sInst.getListenerListSize()==0){
+           setListener();
+       }
+    }
 
     @Override
     protected void onDestroy() {

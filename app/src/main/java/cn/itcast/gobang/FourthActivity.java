@@ -57,13 +57,12 @@ public class FourthActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fourth);
-        addListener();
         initView();
         setSiXin();
         setTiHuan();
-        sendMessage(CREATE_ACTIVITY_OK+ "_");
+//        sendMessage(CREATE_ACTIVITY_OK+ "_");
         setHuiFu();
-        setXinxiang();
+        setXinXiangAdapter();
     }
 
     private void initView(){
@@ -100,6 +99,10 @@ public class FourthActivity extends AppCompatActivity {
         if(!s.isEmpty()){
             String[] strings=s.split("/n");
             Log.e("Four","s="+s);
+
+            for(int i=GongGongZiYuan.siXins.size()-1;i>=0;i--){
+                GongGongZiYuan.siXins.remove(GongGongZiYuan.siXins.get(i));
+            }
             for(int i=0;i<strings.length;i=i+4){
                 GongGongZiYuan.siXins.add(new SiXin(strings[i],strings[i+1],strings[i+2],strings[i+3]));
 
@@ -121,19 +124,22 @@ public class FourthActivity extends AppCompatActivity {
             @Override
             public void setHuiFuButton(int postion) {
                 Log.e("Four","setClickHuiFu");
-                AlertDialog.Builder SiXinDialog=new AlertDialog.Builder(FourthActivity.this);
-                SiXinDialog.setView(setSixinDialogView(View.inflate(FourthActivity.this,R.layout.layout_sixin_dialogview,null),
-                        GongGongZiYuan.siXins.get(postion).getName()));
-                SiXinDialog.create().show();
+                View view=View.inflate(FourthActivity.this,R.layout.layout_sixin_dialogview,null);
+                AlertDialog.Builder SiXinDialogBuilder=new AlertDialog.Builder(FourthActivity.this);
+                SiXinDialogBuilder.setView(view);
+                SiXinDialogBuilder.create();
+                AlertDialog SiXinDialog=SiXinDialogBuilder.show();
+                setSixinDialogView(view,SiXinDialog,GongGongZiYuan.siXins.get(postion).getName());
             }
         });
     }
 
-    private void setXinxiang(){
+    private void setXinXiangAdapter(){
         xinXiangAdapter.setSetXinxiang(new XinXiangAdapter.SetXinXiangs() {
             @Override
             public void setXinXiangFile() {
-                setXinXiangFile();
+                setXinXiang();
+                setSelection();
             }
         });
     }
@@ -305,19 +311,23 @@ public class FourthActivity extends AppCompatActivity {
                         });
                         break;
                     case"ServerSiXin:":
-                        AlertDialog.Builder sixinDialog=new AlertDialog.Builder(FourthActivity.this);
-                        sixinDialog.setView(setSixinDialogView(View.inflate(FourthActivity.this,R.layout.layout_sixin_dialogview,null),strings[1]));
+                        View view=View.inflate(FourthActivity.this,R.layout.layout_sixin_dialogview,null);
+                        AlertDialog.Builder sixinDialogBuilder=new AlertDialog.Builder(FourthActivity.this);
+                        sixinDialogBuilder.setView(view);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                sixinDialog.create().show();
+                                sixinDialogBuilder.create();
+                                AlertDialog alertDialog=sixinDialogBuilder.show();
+                                setSixinDialogView(view,alertDialog,strings[1]);
                             }
                         });
+
                         break;
                     case"ServerSendSiXin:":
                         Log.e("Four","s="+strings[0]+strings[1]+strings[2]);
                         GongGongZiYuan.siXins.add(new SiXin("From",strings[1],strings[2],strings[3]));
-                        io.outputFile(new File(getFilesDir(),GongGongZiYuan.client.getName()+XINXIANG).getAbsolutePath(),"From"+"/n"+strings[1]+"/n"+strings[2]+"/n"+strings[3]+"/n",true);
+                        setXinXiang();
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -332,7 +342,7 @@ public class FourthActivity extends AppCompatActivity {
         });
     }
 
-    private View setSixinDialogView(View sixinDialogView,String name){
+    private View setSixinDialogView(View sixinDialogView,AlertDialog dialog,String name){
         Button sixin_qvxiao_button,sixin_send_button;
         EditText sixin_editText;
         TextView nameXinXiang=(TextView)sixinDialogView.findViewById(R.id.sixin_title);
@@ -340,7 +350,12 @@ public class FourthActivity extends AppCompatActivity {
         sixin_editText=(EditText) sixinDialogView.findViewById(R.id.dialog_sixin_content_editText);
         sixin_qvxiao_button=(Button) sixinDialogView.findViewById(R.id.sixin_dialog_qvxiao_button);
         nameXinXiang.setText("发送私信给:"+name);
-        sixin_qvxiao_button.setOnClickListener(null);
+        sixin_qvxiao_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
         sixin_send_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -357,7 +372,7 @@ public class FourthActivity extends AppCompatActivity {
                     SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
                     gongGongZiYuan.sendMsg("ClientSendSiXin:/n"+name+"/n"+sixin_editText.getText()+"/n"+formatter.format(date)+"_");
                     GongGongZiYuan.siXins.add(new SiXin("To",name,sixin_editText.getText().toString(),formatter.format(date)));
-                    io.outputFile(new File(getFilesDir(),GongGongZiYuan.client.getName()+XINXIANG).getAbsolutePath(),"To"+"/n"+name+"/n"+sixin_editText.getText().toString()+"/n"+formatter.format(date)+"/n",true);
+                    setXinXiang();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -368,9 +383,11 @@ public class FourthActivity extends AppCompatActivity {
                                     xinxiangListView.setSelection(GongGongZiYuan.siXins.size()-1);
                                 }
                             });
+
                             Toast.makeText(FourthActivity.this,"发送成功！",Toast.LENGTH_SHORT).show();
                         }
                     });
+                    dialog.dismiss();
                 }
             }
         });
@@ -386,23 +403,28 @@ public class FourthActivity extends AppCompatActivity {
     private void setXinXiang(){
         if(GongGongZiYuan.siXins.size()!=0){
             IOUtil io=new IOUtil();
+            io.deleteFile(new File(getFilesDir(),GongGongZiYuan.client.getName()+XINXIANG).getAbsolutePath());
             for(SiXin siXin:GongGongZiYuan.siXins){
                 io.outputFile(new File(getFilesDir(),GongGongZiYuan.client.getName()+XINXIANG).getAbsolutePath(),
                         siXin.getFromOrTo()+"/n"+siXin.getName()+"/n"+siXin.getContent()+"/n"+siXin.getTime()+"/n"
-                        ,false);
+                        ,true);
             }
+        }else{
+            io.deleteFile(new File(getFilesDir(),GongGongZiYuan.client.getName()+XINXIANG).getAbsolutePath());
         }
+        Log.e("Four","xinxiang="+io.inputFile(new File(getFilesDir(),GongGongZiYuan.client.getName()+XINXIANG).getAbsolutePath()));
     }
     @Override
     protected void onPause() {
         super.onPause();
-        if(GongGongZiYuan.siXins.size()!=0){
-            for(SiXin siXin:GongGongZiYuan.siXins){
-                io.outputFile(new File(getFilesDir(),GongGongZiYuan.client.getName()+XINXIANG).getAbsolutePath(),
-                        siXin.getFromOrTo()+"/n"+siXin.getName()+"/n"+siXin.getContent()+"/n"+siXin.getTime()+"/n"
-                        ,false);
-            }
-        }
+//        if(GongGongZiYuan.siXins.size()!=0){
+//            for(SiXin siXin:GongGongZiYuan.siXins){
+//                io.outputFile(new File(getFilesDir(),GongGongZiYuan.client.getName()+XINXIANG).getAbsolutePath(),
+//                        siXin.getFromOrTo()+"/n"+siXin.getName()+"/n"+siXin.getContent()+"/n"+siXin.getTime()+"/n"
+//                        ,false);
+//            }
+//        }
+        SocketClient.sInst.allDestoryListener();
     }
 
     @Override
@@ -411,8 +433,8 @@ public class FourthActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPostResume() {
-        super.onPostResume();
+    protected void onResume() {
+        super.onResume();
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -420,36 +442,10 @@ public class FourthActivity extends AppCompatActivity {
                 xinxiangListView.setSelection(GongGongZiYuan.siXins.size()-1);
             }
         });
+        addListener();
+        sendMessage(CREATE_ACTIVITY_OK+ "_");
     }
 
-    /**
-     * Perform any final cleanup before an activity is destroyed.  This can
-     * happen either because the activity is finishing (someone called
-     * {@link #finish} on it), or because the system is temporarily destroying
-     * this instance of the activity to save space.  You can distinguish
-     * between these two scenarios with the {@link #isFinishing} method.
-     *
-     * <p><em>Note: do not count on this method being called as a place for
-     * saving data! For example, if an activity is editing data in a content
-     * provider, those edits should be committed in either {@link #onPause} or
-     * {@link #onSaveInstanceState}, not here.</em> This method is usually implemented to
-     * free resources like threads that are associated with an activity, so
-     * that a destroyed activity does not leave such things around while the
-     * rest of its application is still running.  There are situations where
-     * the system will simply kill the activity's hosting process without
-     * calling this method (or any others) in it, so it should not be used to
-     * do things that are intended to remain around after the process goes
-     * away.
-     *
-     * <p><em>Derived classes must call through to the super class's
-     * implementation of this method.  If they do not, an exception will be
-     * thrown.</em></p>
-     *
-     * @see #onPause
-     * @see #onStop
-     * @see #finish
-     * @see #isFinishing
-     */
 
 
 

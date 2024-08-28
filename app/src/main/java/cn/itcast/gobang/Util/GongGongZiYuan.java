@@ -24,4 +24,6 @@ public class GongGongZiYuan {
         msg.obj=data;
         whandler.sendMessage(msg);
     }
+
+
 }

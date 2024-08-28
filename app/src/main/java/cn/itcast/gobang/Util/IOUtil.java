@@ -63,6 +63,7 @@ public class IOUtil {
         try {
             FileOutputStream fos=new FileOutputStream(FileName,append);
             fos.write(content.getBytes(StandardCharsets.UTF_8));
+            Log.e("outPutStream","outPutStream:"+append+"");
             fos.close();
         } catch (IOException e) {
             e.printStackTrace();

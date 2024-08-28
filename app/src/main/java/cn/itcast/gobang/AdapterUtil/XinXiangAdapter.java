@@ -86,7 +86,7 @@ public class XinXiangAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 siXins.remove(position);
-                setSetXinxiang(setXinXiangs);
+                setXinXiangs.setXinXiangFile();
                 XinXiangAdapter.this.notifyDataSetChanged();
                 setListViewSelection(listViewSelection);
 

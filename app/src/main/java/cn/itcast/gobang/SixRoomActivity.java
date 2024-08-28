@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -24,7 +25,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import cn.itcast.gobang.AdapterUtil.BiaoQingBaoAdapter;
@@ -33,6 +37,7 @@ import cn.itcast.gobang.AdapterUtil.RoomClientRecycleAdapter;
 import cn.itcast.gobang.AdapterUtil.YaoQinAdapter;
 import cn.itcast.gobang.Util.Client;
 import cn.itcast.gobang.Util.GongGongZiYuan;
+import cn.itcast.gobang.Util.IOUtil;
 import cn.itcast.gobang.Util.LiaoTianAdapter;
 import cn.itcast.gobang.Util.LiaoTianXiaoXi;
 import cn.itcast.gobang.Util.Room;
@@ -41,11 +46,12 @@ import cn.itcast.gobang.Util.SocketClient;
 import cn.itcast.gobang.Util.WriterThread;
 
 public class SixRoomActivity extends AppCompatActivity {
-
+    String XINXIANG="的信箱.txt";
+    IOUtil io;
     List<Client> clientList;
     List<Client> haoyouList;
     Boolean isFalse;
-    Button haoyou,liaotian,diange,yaoqing,sendLiaotianButton,addFriendButton,siLiaoButton,qinglvzhengshuButton;
+    Button haoyou,liaotian,diange,yaoqing,sendLiaotianButton;
     ImageView biaoqingbaoButton;
     LinearLayout tihuanLayout;
     RoomClientRecycleAdapter roomClientRecycleAdapter;
@@ -66,14 +72,13 @@ public class SixRoomActivity extends AppCompatActivity {
     ReceiveListener receiveListener;
     List<Client> yaoqingList;
 //    WindowManager windowManager;
-    View dialogView;
+
     Dialog clickImageDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_six_room);
-        setReceiveListener();
         initView();
         gongGongZiYuan.sendMsg("jinruRoom:/n_");
         setBiaoQingBaoList();
@@ -84,6 +89,7 @@ public class SixRoomActivity extends AppCompatActivity {
     }
 
     private void initView(){
+        io=new IOUtil();
 //        windowManager=getWindowManager();
         gongGongZiYuan=new GongGongZiYuan();
         clientList=new ArrayList<>();
@@ -122,12 +128,7 @@ public class SixRoomActivity extends AppCompatActivity {
         biaoqingbaoRecyclerView=biaoqingbaoView.findViewById(R.id.biaoqingbao_RecyclerList);
         biaoqingbaoRecyclerView.setLayoutManager(new GridLayoutManager(this,8));
         biaoqingbaoRecyclerView.setAdapter(biaoQingBaoAdapter);
-        dialogView= View.inflate(SixRoomActivity.this,R.layout.layout_room_client_clickitem,null);
-        addFriendButton=dialogView.findViewById(R.id.addFriend);
-        qinglvzhengshuButton=dialogView.findViewById(R.id.qinglvzhengshu);
-        siLiaoButton=dialogView.findViewById(R.id.siLiao);
         clickImageDialog=new Dialog(SixRoomActivity.this);
-        clickImageDialog.setContentView(dialogView);
         setLiaoTianAdapter();
     }
 
@@ -163,7 +164,7 @@ public class SixRoomActivity extends AppCompatActivity {
         haoyou.setBackgroundResource(R.color.blue);
         liaotian.setBackgroundResource(R.color.blue);
         yaoqing.setBackgroundResource(R.color.blue);
-
+        diange.setBackgroundResource(R.color.blue );
     }
 
     private void setTihuanLayout(){
@@ -207,7 +208,7 @@ public class SixRoomActivity extends AppCompatActivity {
             public void onClick(View v) {
                 tihuanLayout.removeAllViews();
                 setViewDefaultColor();
-                yaoqingView.setBackgroundResource(R.color.yellow1);
+                yaoqing.setBackgroundResource(R.color.yellow1);
                 tihuanLayout.addView(yaoqingView);
                 yaoqingView.getLayoutParams().width=LinearLayout.LayoutParams.MATCH_PARENT;
                 yaoqingView.setLayoutParams(yaoqingView.getLayoutParams());
@@ -216,6 +217,7 @@ public class SixRoomActivity extends AppCompatActivity {
 
         if(tihuanLayout.getChildCount()==0){
             tihuanLayout.addView(liaotianView);
+            liaotian.setBackgroundResource(R.color.yellow1);
             liaotianView.getLayoutParams().height=LinearLayout.LayoutParams.MATCH_PARENT;
             liaotianView.setLayoutParams(liaotianView.getLayoutParams());
         }
@@ -414,7 +416,9 @@ public class SixRoomActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 tihuanLayout.removeAllViews();
+                                setViewDefaultColor();
                                 tihuanLayout.addView(liaotianView);
+                                liaotian.setBackgroundResource(R.color.yellow1);
                                 liaotianView.getLayoutParams().height=LinearLayout.LayoutParams.MATCH_PARENT;
                                 liaotianView.setLayoutParams(liaotianView.getLayoutParams());
                             }
@@ -430,7 +434,26 @@ public class SixRoomActivity extends AppCompatActivity {
                                 refuseYaoQingdialog.create().show();
                             }
                         });
+                        break;
+                    case"ServerSiXin:":
+                        View view=View.inflate(SixRoomActivity.this,R.layout.layout_sixin_dialogview,null);
+                        AlertDialog.Builder sixinDialogBuilder=new AlertDialog.Builder(SixRoomActivity.this);
+                        sixinDialogBuilder.setView(view);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                sixinDialogBuilder.create();
+                                AlertDialog alertDialog=sixinDialogBuilder.show();
+                                setSixinDialogView(view,alertDialog,strings[1]);
+                            }
+                        });
+                        break;
+                    case"ServerSendSiXin:":
+                        Log.e("Four","s="+strings[0]+strings[1]+strings[2]);
+                        GongGongZiYuan.siXins.add(new SiXin("From",strings[1],strings[2],strings[3]));
+                        io.outputFile(new File(getFilesDir(),GongGongZiYuan.client.getName()+XINXIANG).getAbsolutePath(),"From"+"/n"+strings[1]+"/n"+strings[2]+"/n"+strings[3]+"/n",true);
 
+                        break;
                     default:
                         Log.e("SixRoomActivity","default:data="+data);
                 }
@@ -438,6 +461,9 @@ public class SixRoomActivity extends AppCompatActivity {
             }
         });
     }
+
+
+
 
     private void ImageClick(){
         roomClientRecyclerView.post(new Runnable() {
@@ -447,7 +473,7 @@ public class SixRoomActivity extends AppCompatActivity {
                     @Override
                     public void onImageClick(int position) {
                         Log.e("Six","Click");
-                        clickImageDialog(position);
+                        clickImageDialog(View.inflate(SixRoomActivity.this,R.layout.layout_room_client_clickitem,null),position);
                     }
                 });
             }
@@ -489,12 +515,15 @@ public class SixRoomActivity extends AppCompatActivity {
         }
     }
 
-    private void clickImageDialog(int position){
+    private void clickImageDialog(View clickImageDialogView,int position){
+        Button addFriendButton=clickImageDialogView.findViewById(R.id.addFriend);
+        Button siLiaoButton=clickImageDialogView.findViewById(R.id.siLiao);
+        Button siXinButton=clickImageDialogView.findViewById(R.id.sixroom_client_image_dialog_sixin);
 
        if(GongGongZiYuan.client.getZhanghao().equals(clientList.get(position).getZhanghao())){
            Log.e("Six","=========");
 
-           clickImageDialog.setContentView(dialogView);
+           clickImageDialog.setContentView(clickImageDialogView);
            Window dialogWindow=clickImageDialog.getWindow();
            WindowManager.LayoutParams lp=dialogWindow.getAttributes();
            dialogWindow.setGravity(Gravity.LEFT|Gravity.TOP);
@@ -504,24 +533,25 @@ public class SixRoomActivity extends AppCompatActivity {
            lp.height=270;
            lp.width=470;
            dialogWindow.setAttributes(lp);
-           setDialogClick(position);
+           setDialogClick(clickImageDialogView,position);
            clickImageDialog.create();
            clickImageDialog.show();
            siLiaoButton.setVisibility(View.GONE);
            addFriendButton.setVisibility(View.GONE);
+           siXinButton.setVisibility(View.GONE);
        }else{
            Log.e("Six","!!!!!!!====");
-           clickImageDialog.setContentView(dialogView);
+           clickImageDialog.setContentView(clickImageDialogView);
            Window dialogWindow=clickImageDialog.getWindow();
            WindowManager.LayoutParams lp=dialogWindow.getAttributes();
            dialogWindow.setGravity(Gravity.LEFT|Gravity.TOP);
            Log.e("Six","position="+position);
            lp.x=300*(position+1);
            lp.y=680*(position/3);
-           lp.height=620;
+           lp.height=820;
            lp.width=470;
+           setDialogClick(clickImageDialogView,position);
            dialogWindow.setAttributes(lp);
-           setDialogClick(position);
            clickImageDialog.create();
            clickImageDialog.show();
        }
@@ -541,9 +571,10 @@ public class SixRoomActivity extends AppCompatActivity {
 //        return dialogView;
 //    }
 
-    private void setDialogClick(int position){
-        siLiaoButton.setVisibility(View.VISIBLE);
-        addFriendButton.setVisibility(View.VISIBLE);
+    private void setDialogClick(View clickImageDialogView,int position){
+        Button addFriendButton=clickImageDialogView.findViewById(R.id.addFriend);
+        Button siLiaoButton=clickImageDialogView.findViewById(R.id.siLiao);
+        Button siXinButton=clickImageDialogView.findViewById(R.id.sixroom_client_image_dialog_sixin);
         addFriendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -555,6 +586,13 @@ public class SixRoomActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 liaotianEditText.setText("@"+clientList.get(position).getName()+":");
+            }
+        });
+
+        siXinButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gongGongZiYuan.sendMsg("ClientSiXin:/n"+clientList.get(position).getZhanghao()+"_");
             }
         });
     }
@@ -572,6 +610,52 @@ public class SixRoomActivity extends AppCompatActivity {
         });
         tuichuRoomDialog.create();
     }
+
+
+    private View setSixinDialogView(View sixinDialogView,AlertDialog alertDialog,String name){
+        Button sixin_qvxiao_button,sixin_send_button;
+        EditText sixin_editText;
+        TextView nameXinXiang=(TextView)sixinDialogView.findViewById(R.id.sixin_title);
+        sixin_send_button=(Button) sixinDialogView.findViewById(R.id.sixin_dialog_send_button);
+        sixin_editText=(EditText) sixinDialogView.findViewById(R.id.dialog_sixin_content_editText);
+        sixin_qvxiao_button=(Button) sixinDialogView.findViewById(R.id.sixin_dialog_qvxiao_button);
+        nameXinXiang.setText("发送私信给:"+name);
+        sixin_qvxiao_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+            }
+        });
+        sixin_send_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(sixin_editText.getText().toString().equals("")){
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(SixRoomActivity.this,"请输入内容！",Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }else{
+                    Date date = new Date();
+                    SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+                    gongGongZiYuan.sendMsg("ClientSendSiXin:/n"+name+"/n"+sixin_editText.getText()+"/n"+formatter.format(date)+"_");
+                    GongGongZiYuan.siXins.add(new SiXin("To",name,sixin_editText.getText().toString(),formatter.format(date)));
+                    IOUtil io=new IOUtil();
+                    io.outputFile(new File(getFilesDir(),GongGongZiYuan.client.getName()+XINXIANG).getAbsolutePath(),"To"+"/n"+name+"/n"+sixin_editText.getText().toString()+"/n"+formatter.format(date)+"/n",true);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(SixRoomActivity.this,"发送成功！",Toast.LENGTH_SHORT).show();
+                            alertDialog.dismiss();
+                        }
+                    });
+                }
+            }
+        });
+        return sixinDialogView;
+    }
     /**
      * Called when the activity has detected the user's press of the back
      * key. The {@link #getOnBackPressedDispatcher() OnBackPressedDispatcher} will be given a
@@ -583,6 +667,20 @@ public class SixRoomActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        setReceiveListener();
+
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        SocketClient.sInst.allDestoryListener();
     }
 
     @Override

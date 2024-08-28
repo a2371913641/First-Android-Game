@@ -31,7 +31,7 @@
         android:text="找Ta"/>
 
     <Button
-        android:id="@+id/four_haoyou_xuanze_ziliao"
+        android:id="@+id/five_dating_client_xuanze_ziliao"
         android:layout_width="60dp"
         android:layout_height="wrap_content"
         android:textSize="20dp"
@@ -41,13 +41,13 @@
 
 
     <Button
-        android:id="@+id/four_haoyou_xuanze_shanchu"
-        android:layout_width="60dp"
+        android:id="@+id/five_dating_client_xuanze_addFriend"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/yuanjiao_jvxin_red"
         android:textSize="20dp"
+        android:background="@drawable/yuanjiao_jvxin"
         android:layout_marginLeft="5dp"
-        android:text="删除"/>
+        android:text="添加好友"/>
 
 
 </LinearLayout>

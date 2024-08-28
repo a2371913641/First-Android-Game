@@ -51,17 +51,16 @@ public class DatingClientAdapter extends BaseAdapter {
         if(!positionMap.containsKey(position)){
             positionMap.put(position,false);
         }
-        if(convertView==null){
-            convertView= View.inflate(context, R.layout.layout_five_client_item,null);
-            Log.e("DatingClientAdapter", "new convertView" + convertView.hashCode() + " adapter " + this.hashCode());
-        }
 
+
+        convertView= View.inflate(context, R.layout.layout_five_client_item,null);
         LinearLayout layout=convertView.findViewById(R.id.five_dating_client_xuanze);
         TextView name=convertView.findViewById(R.id.five_dating_client_name);
         name.setText(clientList.get(position).getName());
-        if(isShow(position)&&layout.getChildCount()==0&& !clientList.get(position).getZhanghao().equals(GongGongZiYuan.client.getZhanghao())){
+        if(isShow(position)&&layout.getChildCount()==0){
             Log.e("DatingClientAdapter", "addView to " + layout.hashCode() + " : position " + convertView.hashCode());
             Log.e("DatingClientAdapter",positionMap.get(position)+"layout.getChildCount="+layout.getChildCount());
+
             layout.addView(setXuanZeView(getXuanzeView(layout),position));
         }else if(!isShow(position)&&layout.getChildCount()!=0){
             Log.e("DatingClientAdapter",positionMap.get(position)+"layout.getChildCount="+layout.getChildCount());
@@ -119,9 +118,16 @@ public class DatingClientAdapter extends BaseAdapter {
     private View setXuanZeView(View xuanzeView, int position){
         Button zhaoTa=xuanzeView.findViewById(R.id.five_dating_client_xuanze_zhaota);
         Button siLiao=xuanzeView.findViewById(R.id.five_dating_client_xuanze_siliao);
-        Button siXin=xuanzeView.findViewById(R.id.four_haoyou_xuanze_sixin);
+        Button siXin=xuanzeView.findViewById(R.id.five_dating_client_xuanze_sixin);
+        Button addFiend=xuanzeView.findViewById(R.id.five_dating_client_xuanze_addFriend);
+        Button ziliao=xuanzeView.findViewById(R.id.five_dating_client_xuanze_ziliao);
 
-
+        siXin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gongGongZiYuan.sendMsg("ClientSiXin:/n"+clientList.get(position).getZhanghao()+"_");
+            }
+        });
         siLiao.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -135,6 +141,12 @@ public class DatingClientAdapter extends BaseAdapter {
                 gongGongZiYuan.sendMsg("ClientZiLiao:/n"+clientList.get(position).getZhanghao()+"_");
             }
         });
+
+        if(clientList.get(position).getZhanghao().equals(GongGongZiYuan.client.getZhanghao())){
+            siLiao.setVisibility(View.INVISIBLE);
+            siXin.setVisibility(View.INVISIBLE);
+            addFiend.setVisibility(View.INVISIBLE);
+        }
         return xuanzeView;
     }
 

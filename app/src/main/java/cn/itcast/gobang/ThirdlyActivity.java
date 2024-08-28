@@ -27,7 +27,7 @@ public class ThirdlyActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_thirdly);
-        ReceiveListener();
+//        ReceiveListener();
         initView();
         setDuizhan();
     }
@@ -47,6 +47,22 @@ public class ThirdlyActivity extends AppCompatActivity {
                 whandler.sendMessage(msg);
             }
         });
+    }
+
+    /**
+     * Dispatch onPause() to fragments.
+     */
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ReceiveListener();
+        Log.e("Thirdly","onResume");
     }
 
     private void ReceiveListener(){
@@ -69,6 +85,9 @@ public class ThirdlyActivity extends AppCompatActivity {
                         SocketClient.sInst.allDestoryListener();
                     }
                     SocketClient.sInst=null;
+                    if(SocketClient.sInst==null){
+                        Log.e("Thirdly","Socket.sInst=null");
+                    }
                 }
             }
         });

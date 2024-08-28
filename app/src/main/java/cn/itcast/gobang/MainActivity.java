@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                         public void run() {
 //                            IOUtil io=new IOUtil();
 //                            io.deleteFile(new File(getFilesDir(),GongGongZiYuan.client.getName()+"的信箱.txt").getAbsolutePath());
-
+                            Log.e("Main","xinxiang="+ ioUtil.inputFile(new File(getFilesDir(),GongGongZiYuan.client.getName()+"的信箱.txt").getAbsolutePath()));
                             Toast.makeText(MainActivity.this, strings[1],Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -168,8 +168,14 @@ public class MainActivity extends AppCompatActivity {
         logOn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(SocketClient.sInst==null){
+                if(SocketClient.sInst!=null){
+                    Log.e("Main",SocketClient.sInst.toString());
+                    SocketClient.sInst.setEnd();
+                    SocketClient.sInst.allDestoryListener();
+                    SocketClient.sInst = null;
+                }else {
                     SocketClient.sInst=new SocketClient();
+                    Log.e("Main","SocketClient==null:"+SocketClient.sInst.toString());
                     Log.e("Main","sInst="+SocketClient.sInst.toString());
                     SocketClient.sInst.start();
                 }

@@ -65,6 +65,10 @@ public class SocketClient extends Thread {
         }
     }
 
+    public int getListenerListSize(){
+        return listenerList.size();
+    }
+
 
 
 }

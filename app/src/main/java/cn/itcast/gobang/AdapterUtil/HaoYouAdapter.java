@@ -21,66 +21,18 @@ import cn.itcast.gobang.R;
 import cn.itcast.gobang.Util.Client;
 import cn.itcast.gobang.Util.GongGongZiYuan;
 
-public class HaoYouAdapter extends BaseAdapter {
-    Context context;
-    List<Client> clientList;
-    GongGongZiYuan gongGongZiYuan=new GongGongZiYuan();
-    public HaoYouAdapter(Context context,List<Client> clients){
-        this.context=context;
-        this.clientList=clients;
+public class HaoYouAdapter extends ShowClientListAdapter {
+    int Layout=R.layout.layout_haoyou_xuanze;
 
+    public HaoYouAdapter(Context context, List<Client> clients) {
+        super(context, clients);
     }
 
-    @Override
-    public int getCount() {
-        return clientList.size();
-    }
-
-
-    @Override
-    public Object getItem(int position) {
-        return null;
-    }
-
-
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    class IL implements View.OnClickListener {
-        int position;
-        IL(int p ) {
-            position = p;
-        }
-        @Override
-        public void onClick(View v) {
-            modifyExpand(position);
-            HaoYouAdapter.this.notifyDataSetChanged();
-        }
-    }
-
-
-    HashMap<Integer, Boolean> expandMap = new HashMap<>();
-    // 返回position对应的item是否展开
-    boolean isExpand(int position) {
-        if (expandMap.containsKey(position)) {
-            return expandMap.get(position);
-        } else {
-            return false;
-        }
-    }
-
-    // 修改position对应的item的展开状态
-    void modifyExpand(int position) {
-        expandMap.put(position,!isExpand(position));
-    }
-
-    View showItem(int position,View converView){
+    View showItem(int position, View converView){
         if(expandMap.get(position)==null){
             expandMap.put(position,false);
         }
-        View xuanzeView=View.inflate(context,R.layout.layout_haoyou_xuanze,null);
+        View xuanzeView=View.inflate(context,haoyou_xuanze,null);
         if(converView==null) {
             View view = View.inflate(context, R.layout.layout_haoyou_item,null);
             TextView name=(TextView) view.findViewById(R.id.four_haoyou_name);
@@ -95,7 +47,7 @@ public class HaoYouAdapter extends BaseAdapter {
             TextView name=(TextView) converView.findViewById(R.id.four_haoyou_name);
             name.setText(clientList.get(position).getName());
             LinearLayout layout=converView.findViewById(R.id.four_haoyou_xuanze);
-            if(isExpand(position)&&layout.getChildCount()==0&&clientList.get(position).getOnLine()){
+            if(isExpand(position)&&layout.getChildCount()==0){
                 layout.addView(setXuanze(xuanzeView,position));
             }else if(!isExpand(position)&&layout.getChildCount()!=0){
                 layout.removeAllViews();
@@ -135,6 +87,11 @@ public class HaoYouAdapter extends BaseAdapter {
                 gongGongZiYuan.sendMsg("ClientSiXin:/n"+clientList.get(position).getZhanghao()+"_");
             }
         });
+
+        if(!clientList.get(position).getOnLine()){
+            zhaoTa.setVisibility(View.INVISIBLE);
+            siLiao.setVisibility(View.INVISIBLE);
+        }
 
         return xuanzeView;
     }
