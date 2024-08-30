@@ -16,9 +16,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
-import org.w3c.dom.Text;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -36,7 +33,7 @@ import cn.itcast.gobang.Util.SiXin;
 import cn.itcast.gobang.Util.SocketClient;
 import cn.itcast.gobang.Util.WriterThread;
 
-public class FourthActivity extends AppCompatActivity {
+public class FourthActivity extends FourFiveSixActivity {
     String CREATE_ACTIVITY_OK="fourlyActivityOK";
     String XINXIANG="的信箱.txt";
     Button haoyou,ziliao,xinxiang,dadang,jiazu,ziliaoHuanyijian,ziliaoZaixianjiangli;
@@ -311,18 +308,7 @@ public class FourthActivity extends AppCompatActivity {
                         });
                         break;
                     case"ServerSiXin:":
-                        View view=View.inflate(FourthActivity.this,R.layout.layout_sixin_dialogview,null);
-                        AlertDialog.Builder sixinDialogBuilder=new AlertDialog.Builder(FourthActivity.this);
-                        sixinDialogBuilder.setView(view);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                sixinDialogBuilder.create();
-                                AlertDialog alertDialog=sixinDialogBuilder.show();
-                                setSixinDialogView(view,alertDialog,strings[1]);
-                            }
-                        });
-
+                        setSiXinDialog(strings[1]);
                         break;
                     case"ServerSendSiXin:":
                         Log.e("Four","s="+strings[0]+strings[1]+strings[2]);

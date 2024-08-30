@@ -22,45 +22,49 @@ import cn.itcast.gobang.Util.Client;
 import cn.itcast.gobang.Util.GongGongZiYuan;
 
 public class HaoYouAdapter extends ShowClientListAdapter {
-    int Layout=R.layout.layout_haoyou_xuanze;
+    int tihuanLayout=R.layout.layout_haoyou_xuanze;
 
     public HaoYouAdapter(Context context, List<Client> clients) {
         super(context, clients);
     }
 
-    View showItem(int position, View converView){
-        if(expandMap.get(position)==null){
-            expandMap.put(position,false);
-        }
-        View xuanzeView=View.inflate(context,haoyou_xuanze,null);
-        if(converView==null) {
-            View view = View.inflate(context, R.layout.layout_haoyou_item,null);
-            TextView name=(TextView) view.findViewById(R.id.four_haoyou_name);
-
-            name.setText(clientList.get(position).getName());
-            LinearLayout layout=view.findViewById(R.id.four_haoyou_xuanze);
-            if(isExpand(position)&&clientList.get(position).getOnLine()){
-                layout.addView(setXuanze(xuanzeView,position));
+    @Override
+    public View showItem(int position, View converView) {
+            if(expandMap.get(position)==null){
+                expandMap.put(position,false);
             }
-            converView=view;
-        }else {
-            TextView name=(TextView) converView.findViewById(R.id.four_haoyou_name);
-            name.setText(clientList.get(position).getName());
-            LinearLayout layout=converView.findViewById(R.id.four_haoyou_xuanze);
-            if(isExpand(position)&&layout.getChildCount()==0){
-                layout.addView(setXuanze(xuanzeView,position));
-            }else if(!isExpand(position)&&layout.getChildCount()!=0){
-                layout.removeAllViews();
-            }
-        }
-        if(!clientList.get(position).getOnLine()){
-           converView.setBackgroundColor(context.getResources().getColor(R.color.grey));
-        }else{
-            converView.setBackgroundColor(context.getResources().getColor(R.color.lucency));
-        }
+            View xuanzeView=View.inflate(context,tihuanLayout,null);
+            if(converView==null) {
+                View view = View.inflate(context, R.layout.layout_haoyou_item,null);
+                TextView name=(TextView) view.findViewById(R.id.four_haoyou_name);
 
-        return converView;
+                name.setText(clientList.get(position).getName());
+                LinearLayout layout=view.findViewById(R.id.four_haoyou_xuanze);
+                if(isExpand(position)&&clientList.get(position).getOnLine()){
+                    layout.addView(setXuanze(xuanzeView,position));
+                }
+                converView=view;
+            }else {
+                TextView name=(TextView) converView.findViewById(R.id.four_haoyou_name);
+                name.setText(clientList.get(position).getName());
+                LinearLayout layout=converView.findViewById(R.id.four_haoyou_xuanze);
+                if(isExpand(position)&&layout.getChildCount()==0){
+                    layout.addView(setXuanze(xuanzeView,position));
+                }else if(!isExpand(position)&&layout.getChildCount()!=0){
+                    layout.removeAllViews();
+                }
+            }
+            if(!clientList.get(position).getOnLine()){
+                converView.setBackgroundColor(context.getResources().getColor(R.color.grey));
+            }else{
+                converView.setBackgroundColor(context.getResources().getColor(R.color.lucency));
+            }
+
+            return converView;
+
+
     }
+
 
     public View setXuanze(View xuanzeView,int position){
         Button zhaoTa=xuanzeView.findViewById(R.id.four_haoyou_xuanze_zhaota);

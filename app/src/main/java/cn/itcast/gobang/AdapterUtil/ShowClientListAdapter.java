@@ -16,7 +16,7 @@ import cn.itcast.gobang.R;
 import cn.itcast.gobang.Util.Client;
 import cn.itcast.gobang.Util.GongGongZiYuan;
 
-public class ShowClientListAdapter extends BaseAdapter {
+public abstract class ShowClientListAdapter extends BaseAdapter {
     Context context;
     List<Client> clientList;
     GongGongZiYuan gongGongZiYuan=new GongGongZiYuan();
@@ -70,43 +70,10 @@ public class ShowClientListAdapter extends BaseAdapter {
         expandMap.put(position,!isExpand(position));
     }
 
-    View showItem(int position, View converView) {
-        return null;
-    }
+    public abstract View showItem(int position, View converView);
 
-    public View setXuanze(View xuanzeView,int position){
-        Button zhaoTa=xuanzeView.findViewById(R.id.four_haoyou_xuanze_zhaota);
-        Button siLiao=xuanzeView.findViewById(R.id.four_haoyou_xuanze_siliao);
-        Button siXin=xuanzeView.findViewById(R.id.four_haoyou_xuanze_sixin);
+    public abstract View setXuanze(View xuanzeView,int position);
 
-        zhaoTa.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                gongGongZiYuan.sendMsg("ClientZiLiao:/n"+clientList.get(position).getZhanghao()+"_");
-            }
-        });
-
-        siLiao.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                gongGongZiYuan.sendMsg("ClientSiLiao:/n"+clientList.get(position).getZhanghao()+"_");
-            }
-        });
-
-        siXin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                gongGongZiYuan.sendMsg("ClientSiXin:/n"+clientList.get(position).getZhanghao()+"_");
-            }
-        });
-
-        if(!clientList.get(position).getOnLine()){
-            zhaoTa.setVisibility(View.INVISIBLE);
-            siLiao.setVisibility(View.INVISIBLE);
-        }
-
-        return xuanzeView;
-  }
 
 
 

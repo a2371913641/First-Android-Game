@@ -61,36 +61,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
+    //监听器处理消息
     private void setReceiveListener(){
         SocketClient.sInst.addListener(receiveListener=new ReceiveListener() {
             @Override
             public void onReceive(String data) {
                 String[] strings=data.split("/n");
                 if(data.equals(MESSAGE_OK)){
-                    if(jizhuzhanghao.isChecked()) {
-                        ioUtil.outputFile(new File(getFilesDir(), ACOUNT_LIST).getAbsolutePath(),nuber.getText().toString()+"/n",true);
-                    }
-
-                    if(jizhumima.isChecked()&&data.equals(MESSAGE_OK)){
-                        ioUtil.createFile(new File(getFilesDir(),nuber.getText().toString()+"密码").getAbsolutePath());
-                        ioUtil.outputFile(new File(getFilesDir(),nuber.getText().toString()+"密码").getAbsolutePath(),admin.getText().toString(),false);
-                        ziYuan.clientAccounts.add(new ClientAccount(nuber.getText().toString(),admin.getText().toString()));
-                        File baocunzhanghao=new File(getFilesDir(),Edit_zhanghaoMima);
-                        if(!baocunzhanghao.exists()){
-                            ioUtil.createFile(baocunzhanghao.getAbsolutePath());
-                        }
-                        ioUtil.outputFile(baocunzhanghao.getAbsolutePath(),
-                                nuber.getText().toString()+"/n"+admin.getText().toString(),
-                                false);
-                    }
-
-                    File gouxuankuangzhuangtai=new File(getFilesDir(),CHECK_BOX_ZHUANGTAI);
-                    if(!gouxuankuangzhuangtai.exists()){
-                        ioUtil.createFile(gouxuankuangzhuangtai.getAbsolutePath());
-                    }
-
-                    ioUtil.outputFile(gouxuankuangzhuangtai.getAbsolutePath(),fuXuanKuangZhuangTai(),false);
+                    setJizhuzhanghaoFile(jizhuzhanghao.isChecked());
+                    setJizhumimaFile(jizhumima.isChecked());
+                    BaoCunZhanghaoMiMa(jizhuzhanghao.isChecked());
+                    setGouxuankuangZhuangTaiFile();
                     Intent intent=new Intent(MainActivity.this,ThirdlyActivity.class);
                     startActivity(intent);
                 }else{
@@ -336,5 +317,31 @@ public class MainActivity extends AppCompatActivity {
             SocketClient.sInst.destroyLintener(receiveListener);
         }
         super.onDestroy();
+    }
+
+    private void setJizhuzhanghaoFile(Boolean isJizhuzhanghao){
+        if(isJizhuzhanghao) {
+            ioUtil.outputFile(new File(getFilesDir(), ACOUNT_LIST).getAbsolutePath(),nuber.getText().toString()+"/n",true);
+        }
+    }
+
+    private void setJizhumimaFile(Boolean isJizhumima){
+        if(isJizhumima){
+            ioUtil.outputFile(new File(getFilesDir(),nuber.getText().toString()+"密码").getAbsolutePath(),admin.getText().toString(),false);
+            ziYuan.clientAccounts.add(new ClientAccount(nuber.getText().toString(),admin.getText().toString()));
+            File baocunzhanghao=new File(getFilesDir(),Edit_zhanghaoMima);
+
+        }
+    }
+
+    private void BaoCunZhanghaoMiMa(Boolean isJizhuzhanghao){
+        ioUtil.outputFile(new File(getFilesDir(),Edit_zhanghaoMima).getAbsolutePath(),
+                nuber.getText().toString()+"/n"+admin.getText().toString(),
+                false);
+    }
+
+    private void setGouxuankuangZhuangTaiFile(){
+        ioUtil.outputFile(new File(getFilesDir(),CHECK_BOX_ZHUANGTAI).getAbsolutePath(),fuXuanKuangZhuangTai(),false);
+
     }
 }

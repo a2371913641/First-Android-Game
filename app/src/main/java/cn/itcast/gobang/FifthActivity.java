@@ -1,7 +1,7 @@
 package cn.itcast.gobang;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
+
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,9 +24,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
-import java.util.Date;
+
 import java.util.List;
 
 import cn.itcast.gobang.AdapterUtil.BiaoQingBaoAdapter;
@@ -43,7 +43,7 @@ import cn.itcast.gobang.Util.SiXin;
 import cn.itcast.gobang.Util.SocketClient;
 import cn.itcast.gobang.Util.WriterThread;
 
-public class FifthActivity extends AppCompatActivity {
+public class FifthActivity extends FourFiveSixActivity {
     String XINXIANG="的信箱.txt";
     Intent oldintent;
     int datinghaoma;
@@ -335,20 +335,20 @@ public class FifthActivity extends AppCompatActivity {
                         });
                     }
                 }else if(strings[0].equals("ServerSiLiao:")){
-                    String s="@"+strings[1]+":";
-                    liaotianEditView.setText(s);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            tihuan.removeAllViews();
-                            setViewDefaultColor();
-                            tihuan.addView(liaotian_layout);
-                            liaotian_btn.setBackgroundResource(R.color.yellow1);
-                            LayoutParams lp = liaotian_layout.getLayoutParams();
-                            lp.height = LinearLayout.LayoutParams.MATCH_PARENT;
-                            liaotian_layout.setLayoutParams(lp);
-                        }
-                    });
+//                    String s="@"+strings[1]+":";
+//                    liaotianEditView.setText(s);
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            tihuan.removeAllViews();
+//                            setViewDefaultColor();
+//                            tihuan.addView(liaotian_layout);
+//                            liaotian_btn.setBackgroundResource(R.color.yellow1);
+//                            LayoutParams lp = liaotian_layout.getLayoutParams();
+//                            lp.height = LinearLayout.LayoutParams.MATCH_PARENT;
+//                            liaotian_layout.setLayoutParams(lp);
+//                        }
+//                    });
                 }else if(strings[0].equals("ServerYaoQin:")){
                     AlertDialog.Builder yaoqingDialog=new AlertDialog.Builder(FifthActivity.this);
                     yaoqingDialog.setTitle("提示");
@@ -373,17 +373,7 @@ public class FifthActivity extends AppCompatActivity {
                         }
                     });
                 }else if(strings[0].equals("ServerSiXin:")) {
-                        View view=View.inflate(FifthActivity.this, R.layout.layout_sixin_dialogview, null);
-                        AlertDialog.Builder sixinDialogBuiler = new AlertDialog.Builder(FifthActivity.this);
-                        sixinDialogBuiler.setView(view);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                sixinDialogBuiler.create();
-                                AlertDialog alertDialog=sixinDialogBuiler.show();
-                                setSixinDialogView(view,alertDialog, strings[1]);
-                            }
-                        });
+                    setSiXinDialog(strings[1]);
                 }else if(strings[0].equals("ServerSendSiXin:")){
                         Log.e("FifctActivity","s="+strings[0]+strings[1]+strings[2]);
                         GongGongZiYuan.siXins.add(new SiXin("From",strings[1],strings[2],strings[3]));
@@ -395,57 +385,6 @@ public class FifthActivity extends AppCompatActivity {
         });
     }
 
-    private View setSixinDialogView(View sixinDialogView,AlertDialog alertDialog,String name){
-        Button sixin_qvxiao_button,sixin_send_button;
-        EditText sixin_editText;
-        TextView nameXinXiang=(TextView)sixinDialogView.findViewById(R.id.sixin_title);
-        sixin_send_button=(Button) sixinDialogView.findViewById(R.id.sixin_dialog_send_button);
-        sixin_editText=(EditText) sixinDialogView.findViewById(R.id.dialog_sixin_content_editText);
-        sixin_qvxiao_button=(Button) sixinDialogView.findViewById(R.id.sixin_dialog_qvxiao_button);
-        nameXinXiang.setText("发送私信给:"+name);
-        sixin_qvxiao_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                alertDialog.dismiss();
-            }
-        });
-        sixin_send_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if(sixin_editText.getText().toString().equals("")){
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(FifthActivity.this,"请输入内容！",Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }else{
-                    Date date = new Date();
-                    SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-                    gongGongZiYuan.sendMsg("ClientSendSiXin:/n"+name+"/n"+sixin_editText.getText()+"/n"+formatter.format(date)+"_");
-                    GongGongZiYuan.siXins.add(new SiXin("To",name,sixin_editText.getText().toString(),formatter.format(date)));
-                    IOUtil io=new IOUtil();
-                    io.outputFile(new File(getFilesDir(),GongGongZiYuan.client.getName()+XINXIANG).getAbsolutePath(),"To"+"/n"+name+"/n"+sixin_editText.getText().toString()+"/n"+formatter.format(date)+"/n",true);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(FifthActivity.this,"发送成功！",Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                            alertDialog.dismiss();
-                        }
-                    });
-                }
-            }
-        });
-
-
-        return sixinDialogView;
-    }
 
     private void setViewDefaultColor(){
         haoyou_btn.setBackgroundResource(R.color.blue);

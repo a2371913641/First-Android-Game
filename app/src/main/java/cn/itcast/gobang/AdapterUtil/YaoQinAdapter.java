@@ -27,7 +27,8 @@ public class YaoQinAdapter extends ShowClientListAdapter {
     }
 
 
-    View showItem(int position, View converView) {
+    @Override
+    public View showItem(int position, View converView) {
         if (expandMap.get(position) == null) {
             expandMap.put(position, false);
         }
@@ -35,12 +36,10 @@ public class YaoQinAdapter extends ShowClientListAdapter {
         if (converView == null) {
             View view = View.inflate(context, R.layout.layout_haoyou_item, null);
             TextView name = (TextView) view.findViewById(R.id.four_haoyou_name);
-//            name.getLayoutParams().width=LinearLayout.LayoutParams.MATCH_PARENT;
-//            name.setLayoutParams(name.getLayoutParams());
             name.setText(clientList.get(position).getName());
             LinearLayout layout = view.findViewById(R.id.four_haoyou_xuanze);
             if (isExpand(position)) {
-                layout.addView(setXuanZeView(xuanzeView, position));
+                layout.addView(setXuanze(xuanzeView, position));
             }
             converView = view;
         } else {
@@ -48,7 +47,7 @@ public class YaoQinAdapter extends ShowClientListAdapter {
             name.setText(clientList.get(position).getName());
             LinearLayout layout = converView.findViewById(R.id.four_haoyou_xuanze);
             if (isExpand(position) && layout.getChildCount() == 0) {
-                layout.addView(setXuanZeView(xuanzeView, position));
+                layout.addView(setXuanze(xuanzeView, position));
             } else if (!isExpand(position) && layout.getChildCount() != 0) {
                 layout.removeAllViews();
             }
@@ -56,7 +55,8 @@ public class YaoQinAdapter extends ShowClientListAdapter {
         return converView;
     }
 
-    private View setXuanZeView(View xuanzeView, int position) {
+    @Override
+    public View setXuanze(View xuanzeView, int position) {
 
         Button siLiao = xuanzeView.findViewById(R.id.yaoqing_xuanze_siliao);
         Button siXin = xuanzeView.findViewById(R.id.yaoqing_xuanze_sixin);
