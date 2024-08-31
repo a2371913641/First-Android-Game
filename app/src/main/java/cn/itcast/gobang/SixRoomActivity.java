@@ -1,6 +1,7 @@
 package cn.itcast.gobang;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,7 +22,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,17 +29,17 @@ import cn.itcast.gobang.AdapterUtil.BiaoQingBaoAdapter;
 import cn.itcast.gobang.AdapterUtil.HaoYouAdapter;
 import cn.itcast.gobang.AdapterUtil.RoomClientRecycleAdapter;
 import cn.itcast.gobang.AdapterUtil.YaoQinAdapter;
+import cn.itcast.gobang.FunctionActivityFile.HaoYouListUpdate;
+import cn.itcast.gobang.FunctionActivityFile.SendSiXinFunction;
 import cn.itcast.gobang.Util.Client;
 import cn.itcast.gobang.Util.GongGongZiYuan;
 import cn.itcast.gobang.Util.IOUtil;
 import cn.itcast.gobang.Util.LiaoTianAdapter;
 import cn.itcast.gobang.Util.LiaoTianXiaoXi;
 import cn.itcast.gobang.Util.Room;
-import cn.itcast.gobang.Util.SiXin;
 import cn.itcast.gobang.Util.SocketClient;
 
-public class SixRoomActivity extends FourFiveSixActivity {
-    String XINXIANG="的信箱.txt";
+public class SixRoomActivity extends AppCompatActivity {
     IOUtil io;
     List<Client> clientList;
     List<Client> haoyouList;
@@ -49,7 +49,7 @@ public class SixRoomActivity extends FourFiveSixActivity {
     LinearLayout tihuanLayout;
     RoomClientRecycleAdapter roomClientRecycleAdapter;
     RecyclerView roomClientRecyclerView;
-    GongGongZiYuan gongGongZiYuan;
+    public GongGongZiYuan gongGongZiYuan;
     TextView roomNameTextView;
     View haoyouView,liaotianView,diangeView,yaoqingView,biaoqingbaoView;
     LiaoTianAdapter liaoTianAdapter;
@@ -67,12 +67,16 @@ public class SixRoomActivity extends FourFiveSixActivity {
 //    WindowManager windowManager;
 
     Dialog clickImageDialog;
+    SendSiXinFunction sendSiXinFunction;
+    HaoYouListUpdate haoYouListUpdate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_six_room);
         initView();
+        sendSiXinFunction=new SendSiXinFunction(SixRoomActivity.this,gongGongZiYuan,SixRoomActivity.this);
+        haoYouListUpdate=new HaoYouListUpdate(haoyouList,SixRoomActivity.this);
         gongGongZiYuan.sendMsg("jinruRoom:/n_");
         setBiaoQingBaoList();
         setLiaotian();
@@ -274,17 +278,11 @@ public class SixRoomActivity extends FourFiveSixActivity {
                         });
                         break;
                     case "InTheRoomliaotianxiaoxi:":
-                        Log.e("Six","Strings[1]="+strings[1]+"Strings[2]="+strings[2]);
-
                             liaotianXiaoxiList.add(new LiaoTianXiaoXi(strings[1],Integer.parseInt(strings[2])));
 
-                        for(LiaoTianXiaoXi xiaoXi:liaotianXiaoxiList){
-                            Log.e("Six","ltxxi="+xiaoXi.getWenzi()+xiaoXi.getBiaoqing());
-                        }
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Log.e("Six","UI");
                                 liaoTianAdapter.notifyDataSetChanged();
                                 liaotianListView.setSelection(liaoTianAdapter.getCount()-1);
                                 Toast.makeText(SixRoomActivity.this, data, Toast.LENGTH_SHORT).show();
@@ -297,16 +295,11 @@ public class SixRoomActivity extends FourFiveSixActivity {
                         for(int i=yaoqingList.size()-1;i>=0;i--){
                             yaoqingList.remove(i);
                         }
-                        Log.e("Six","yaoqingList="+yaoqingList.size());
 
-                        Log.e("Six","strings.size="+strings.length);
                         for(int i=1;i<strings.length;i=i+5){
                             yaoqingList.add(new Client(strings[i],strings[i+1],strings[i+2],Integer.parseInt(strings[i+3]),Boolean.parseBoolean(strings[i+4])));
                         }
 
-                        for(Client client:yaoqingList){
-                            Log.e("Six","name="+client.getName());
-                        }
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -317,20 +310,9 @@ public class SixRoomActivity extends FourFiveSixActivity {
                         break;
 
                     case"setHaoYouList:":
-                        for(int i=haoyouList.size()-1;i>=0;i--){
-                            haoyouList.remove(haoyouList.get(i));
-                        }
-
-                        for(int i=1;i<strings.length;i=i+5){
-                            haoyouList.add(new Client(strings[i],strings[i+1],strings[i+2],Integer.parseInt(strings[i+3]),Boolean.parseBoolean(strings[i+4])));
-                        }
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                haoYouAdapter.notifyDataSetChanged();
-                            }
-                        });
-
+                        haoYouListUpdate.DeleteAll();
+                        haoYouListUpdate.updateHaoYouList(strings);
+                        haoYouListUpdate.updateUIHaoYouList(haoYouAdapter);
                         break;
                     case"serverAddFriend:":
                         AlertDialog.Builder builder=new AlertDialog.Builder(SixRoomActivity.this);
@@ -429,13 +411,11 @@ public class SixRoomActivity extends FourFiveSixActivity {
                         });
                         break;
                     case"ServerSiXin:":
-                        setSiXinDialog(strings[1]);
+                        sendSiXinFunction.setSiXinDialog(strings[1]);
                         break;
                     case"ServerSendSiXin:":
                         Log.e("Four","s="+strings[0]+strings[1]+strings[2]);
-                        GongGongZiYuan.siXins.add(new SiXin("From",strings[1],strings[2],strings[3]));
-                        io.outputFile(new File(getFilesDir(),GongGongZiYuan.client.getName()+XINXIANG).getAbsolutePath(),"From"+"/n"+strings[1]+"/n"+strings[2]+"/n"+strings[3]+"/n",true);
-
+                        sendSiXinFunction.jieshouSiXIn(strings[1],strings[2],strings[3]);
                         break;
                     default:
                         Log.e("SixRoomActivity","default:data="+data);
@@ -582,19 +562,19 @@ public class SixRoomActivity extends FourFiveSixActivity {
         });
     }
 
-    private void setTuichuRoomDialog(){
-        tuichuRoomDialog=new AlertDialog.Builder(SixRoomActivity.this);
-        tuichuRoomDialog.setTitle("提示");
-        tuichuRoomDialog.setMessage("退出房间并返回大厅？");
-        tuichuRoomDialog.setNegativeButton("取消",null);
-        tuichuRoomDialog.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                gongGongZiYuan.sendMsg("tuichuRoom:_");
-            }
-        });
-        tuichuRoomDialog.create();
-    }
+//    private void setTuichuRoomDialog(){
+//        tuichuRoomDialog=new AlertDialog.Builder(SixRoomActivity.this);
+//        tuichuRoomDialog.setTitle("提示");
+//        tuichuRoomDialog.setMessage("退出房间并返回大厅？");
+//        tuichuRoomDialog.setNegativeButton("取消",null);
+//        tuichuRoomDialog.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                gongGongZiYuan.sendMsg("tuichuRoom:_");
+//            }
+//        });
+//        tuichuRoomDialog.create();
+//    }
 
 
 //

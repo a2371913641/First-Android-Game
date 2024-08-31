@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -25,6 +26,8 @@ import java.util.List;
 
 import cn.itcast.gobang.AdapterUtil.DaTingAdapter;
 import cn.itcast.gobang.AdapterUtil.XinXiangAdapter;
+import cn.itcast.gobang.FunctionActivityFile.HaoYouListUpdate;
+import cn.itcast.gobang.FunctionActivityFile.SendSiXinFunction;
 import cn.itcast.gobang.Util.Client;
 import cn.itcast.gobang.Util.GongGongZiYuan;
 import cn.itcast.gobang.AdapterUtil.HaoYouAdapter;
@@ -33,28 +36,32 @@ import cn.itcast.gobang.Util.SiXin;
 import cn.itcast.gobang.Util.SocketClient;
 import cn.itcast.gobang.Util.WriterThread;
 
-public class FourthActivity extends FourFiveSixActivity {
+public class FourthActivity extends AppCompatActivity {
     String CREATE_ACTIVITY_OK="fourlyActivityOK";
     String XINXIANG="的信箱.txt";
     Button haoyou,ziliao,xinxiang,dadang,jiazu,ziliaoHuanyijian,ziliaoZaixianjiangli;
     ImageButton ziliaoXinbie;
     TextView ziliaoJinyanzhi,ziliaoName;
-    Handler whandler= WriterThread.wHandler;
+    HaoYouAdapter haoYouAdapter;
     LinearLayout tiHuan;
     IOUtil io;
     ListView haoyouListView,datingListView,xinxiangListView;
-    XinXiangAdapter xinXiangAdapter;
+    public XinXiangAdapter xinXiangAdapter;
     DaTingAdapter daTingAdapter;
-    GongGongZiYuan gongGongZiYuan;
+    public GongGongZiYuan gongGongZiYuan;
     List<Client> haoyouList;
     int[] dating={0,0,0,0,0,0,0,0};
     View ziliaoView,haoyouView,dadiangView,xinxiangView,jiazuView,sixinDialogView;
     ReceiveListener receiveListener;
+    SendSiXinFunction sendSiXinFunction;
+    HaoYouListUpdate haoYouListUpdate;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fourth);
         initView();
+        sendSiXinFunction=new SendSiXinFunction(FourthActivity.this,gongGongZiYuan,FourthActivity.this);
+        haoYouListUpdate=new HaoYouListUpdate(haoyouList,FourthActivity.this);
         setSiXin();
         setTiHuan();
 //        sendMessage(CREATE_ACTIVITY_OK+ "_");
@@ -88,6 +95,8 @@ public class FourthActivity extends FourFiveSixActivity {
         ziliaoXinbie=(ImageButton) ziliaoView.findViewById(R.id.four_ziliao_xingbie);
         ziliaoZaixianjiangli=(Button) ziliaoView.findViewById(R.id.four_ziliao_onlinejiangli);
         haoyouListView=(ListView) haoyouView.findViewById(R.id.four_haoyou_listview);
+        haoYouAdapter=new HaoYouAdapter(FourthActivity.this,haoyouList);
+        haoyouListView.setAdapter(haoYouAdapter);
         gongGongZiYuan=new GongGongZiYuan();
     }
 
@@ -126,7 +135,7 @@ public class FourthActivity extends FourFiveSixActivity {
                 SiXinDialogBuilder.setView(view);
                 SiXinDialogBuilder.create();
                 AlertDialog SiXinDialog=SiXinDialogBuilder.show();
-                setSixinDialogView(view,SiXinDialog,GongGongZiYuan.siXins.get(postion).getName());
+                sendSiXinFunction.setSixinDialogView(view,SiXinDialog,GongGongZiYuan.siXins.get(postion).getName());
             }
         });
     }
@@ -215,11 +224,6 @@ public class FourthActivity extends FourFiveSixActivity {
 
     }
 
-    private void sendMessage(String data){
-        Message msg=new Message();
-        msg.obj=data;
-        whandler.sendMessage(msg);
-    }
 
     private void addListener(){
         SocketClient.sInst.addListener(receiveListener=new ReceiveListener() {
@@ -240,19 +244,22 @@ public class FourthActivity extends FourFiveSixActivity {
                     break;
 
                     case "setHaoYouList:":
-                        for(int i=haoyouList.size()-1;i>=0;i--){
-                            haoyouList.remove(haoyouList.get(i));
-                        }
-
-                        for(int i=1;i<strings.length;i=i+5){
-                            haoyouList.add(new Client(strings[i],strings[i+1],strings[i+2],Integer.parseInt(strings[i+3]),Boolean.parseBoolean(strings[i+4])));
-                        }
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                haoyouListView.setAdapter(new HaoYouAdapter(FourthActivity.this, haoyouList));
-                            }
-                        });
+//                        for(int i=haoyouList.size()-1;i>=0;i--){
+//                            haoyouList.remove(haoyouList.get(i));
+//                        }
+//
+//                        for(int i=1;i<strings.length;i=i+5){
+//                            haoyouList.add(new Client(strings[i],strings[i+1],strings[i+2],Integer.parseInt(strings[i+3]),Boolean.parseBoolean(strings[i+4])));
+//                        }
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                haoyouListView.setAdapter(new HaoYouAdapter(FourthActivity.this, haoyouList));
+//                            }
+//                        });
+                        haoYouListUpdate.DeleteAll();
+                        haoYouListUpdate.updateHaoYouList(strings);
+                        haoYouListUpdate.updateUIHaoYouList(haoYouAdapter);
                         break;
                     case "jinrudating:":
                         Log.e("Four","jinruDating--------");
@@ -308,17 +315,20 @@ public class FourthActivity extends FourFiveSixActivity {
                         });
                         break;
                     case"ServerSiXin:":
-                        setSiXinDialog(strings[1]);
-                        break;
-                    case"ServerSendSiXin:":
-                        Log.e("Four","s="+strings[0]+strings[1]+strings[2]);
-                        GongGongZiYuan.siXins.add(new SiXin("From",strings[1],strings[2],strings[3]));
-                        setXinXiang();
+                        sendSiXinFunction.setSiXinDialog(strings[1]);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 xinXiangAdapter.notifyDataSetChanged();
-                                xinxiangListView.setSelection(GongGongZiYuan.siXins.size()-1);
+                            }
+                        });
+                        break;
+                    case"ServerSendSiXin:":
+                        sendSiXinFunction.jieshouSiXIn(strings[1],strings[2],strings[3]);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                xinXiangAdapter.notifyDataSetChanged();
                             }
                         });
                         break;
@@ -328,59 +338,6 @@ public class FourthActivity extends FourFiveSixActivity {
         });
     }
 
-    private View setSixinDialogView(View sixinDialogView,AlertDialog dialog,String name){
-        Button sixin_qvxiao_button,sixin_send_button;
-        EditText sixin_editText;
-        TextView nameXinXiang=(TextView)sixinDialogView.findViewById(R.id.sixin_title);
-        sixin_send_button=(Button) sixinDialogView.findViewById(R.id.sixin_dialog_send_button);
-        sixin_editText=(EditText) sixinDialogView.findViewById(R.id.dialog_sixin_content_editText);
-        sixin_qvxiao_button=(Button) sixinDialogView.findViewById(R.id.sixin_dialog_qvxiao_button);
-        nameXinXiang.setText("发送私信给:"+name);
-        sixin_qvxiao_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-        sixin_send_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if(sixin_editText.getText().toString().equals("")){
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(FourthActivity.this,"请输入内容！",Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }else{
-                    Date date = new Date();
-                    SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-                    gongGongZiYuan.sendMsg("ClientSendSiXin:/n"+name+"/n"+sixin_editText.getText()+"/n"+formatter.format(date)+"_");
-                    GongGongZiYuan.siXins.add(new SiXin("To",name,sixin_editText.getText().toString(),formatter.format(date)));
-                    setXinXiang();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    xinXiangAdapter.notifyDataSetChanged();
-                                    xinxiangListView.setSelection(GongGongZiYuan.siXins.size()-1);
-                                }
-                            });
-
-                            Toast.makeText(FourthActivity.this,"发送成功！",Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                    dialog.dismiss();
-                }
-            }
-        });
-
-
-        return sixinDialogView;
-    }
 
     /**
      * Dispatch onPause() to fragments.
@@ -429,7 +386,7 @@ public class FourthActivity extends FourFiveSixActivity {
             }
         });
         addListener();
-        sendMessage(CREATE_ACTIVITY_OK+ "_");
+        gongGongZiYuan.sendMsg(CREATE_ACTIVITY_OK+ "_");
     }
 
 

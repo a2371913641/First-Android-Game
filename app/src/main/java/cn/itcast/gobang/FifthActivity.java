@@ -2,6 +2,7 @@ package cn.itcast.gobang;
 
 import androidx.appcompat.app.AlertDialog;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -9,7 +10,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -23,7 +23,6 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
 
 import java.util.ArrayList;
 
@@ -32,19 +31,20 @@ import java.util.List;
 import cn.itcast.gobang.AdapterUtil.BiaoQingBaoAdapter;
 import cn.itcast.gobang.AdapterUtil.DatingClientAdapter;
 import cn.itcast.gobang.AdapterUtil.HaoYouAdapter;
+import cn.itcast.gobang.FunctionActivityFile.HaoYouListUpdate;
+import cn.itcast.gobang.FunctionActivityFile.LiaoTianFunction;
+import cn.itcast.gobang.FunctionActivityFile.SendSiXinFunction;
 import cn.itcast.gobang.Util.Client;
 import cn.itcast.gobang.Util.GongGongZiYuan;
-import cn.itcast.gobang.Util.IOUtil;
 import cn.itcast.gobang.Util.LiaoTianAdapter;
 import cn.itcast.gobang.Util.LiaoTianXiaoXi;
 import cn.itcast.gobang.Util.Room;
 import cn.itcast.gobang.Util.RoomListAdapter;
-import cn.itcast.gobang.Util.SiXin;
 import cn.itcast.gobang.Util.SocketClient;
 import cn.itcast.gobang.Util.WriterThread;
 
-public class FifthActivity extends FourFiveSixActivity {
-    String XINXIANG="的信箱.txt";
+public class FifthActivity extends AppCompatActivity {
+
     Intent oldintent;
     int datinghaoma;
     String yonghuName;
@@ -69,7 +69,9 @@ public class FifthActivity extends FourFiveSixActivity {
     DatingClientAdapter datingClientAdapter;
     ReceiveListener receiveListener;
     HaoYouAdapter haoYouAdapter;
-    IOUtil io;
+    LiaoTianFunction liaoTianFunction;
+    SendSiXinFunction sendSiXinFunction;
+    HaoYouListUpdate haoYouListUpdate;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,8 +79,10 @@ public class FifthActivity extends FourFiveSixActivity {
         oldintent=getIntent();
         datinghaoma=oldintent.getIntExtra("datinghaoma",100);
         yonghuName=oldintent.getStringExtra("yonghuname");
-
         initView();
+        sendSiXinFunction=new SendSiXinFunction(FifthActivity.this,gongGongZiYuan,FifthActivity.this);
+        liaoTianFunction=new LiaoTianFunction(FifthActivity.this);
+        haoYouListUpdate=new HaoYouListUpdate(haoyouList,FifthActivity.this);
         Log.e("fifthActivity","initView后.roomlist="+roomList.size());
         setBiaoQingBaoList();
         setListener();
@@ -91,7 +95,6 @@ public class FifthActivity extends FourFiveSixActivity {
 
 
     private void initView(){
-        io=new IOUtil();
         whandler= WriterThread.wHandler;
         Log.e("FifthActivity","onCreate.initView()");
         roomList=new ArrayList<>();
@@ -274,19 +277,9 @@ public class FifthActivity extends FourFiveSixActivity {
                     });
 
                 }else if(strings[0].equals("setHaoYouList:")){
-                    for (int i = haoyouList.size() - 1; i >= 0; i--) {
-                        haoyouList.remove(haoyouList.get(i));
-                    }
-
-                    for (int i = 1; i < strings.length; i = i + 5) {
-                        haoyouList.add(new Client(strings[i], strings[i + 1], strings[i + 2], Integer.parseInt(strings[i + 3]), Boolean.parseBoolean(strings[i + 4])));
-                    }
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            haoYouAdapter.notifyDataSetChanged();
-                        }
-                    });
+                    haoYouListUpdate.DeleteAll();
+                    haoYouListUpdate.updateHaoYouList(strings);
+                    haoYouListUpdate.updateUIHaoYouList(haoYouAdapter);
                 }else if(strings[0].equals("ServerZiLiao:")) {
                     //"ServerZiLiao:/n+"+client.name+"/n"+client.onLine+"/n"+client.nowAtHall+"/n"
                     //+client.atRoom.roomHaoMa+"/n"+client.atRoom.roomName+"/n"+client.atRoom.roomType+"/n"+!client.atRoom.roomAdmin.equals(" ")+"/n"+nowAtHall+"_"
@@ -335,20 +328,20 @@ public class FifthActivity extends FourFiveSixActivity {
                         });
                     }
                 }else if(strings[0].equals("ServerSiLiao:")){
-//                    String s="@"+strings[1]+":";
-//                    liaotianEditView.setText(s);
-//                    runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            tihuan.removeAllViews();
-//                            setViewDefaultColor();
-//                            tihuan.addView(liaotian_layout);
-//                            liaotian_btn.setBackgroundResource(R.color.yellow1);
-//                            LayoutParams lp = liaotian_layout.getLayoutParams();
-//                            lp.height = LinearLayout.LayoutParams.MATCH_PARENT;
-//                            liaotian_layout.setLayoutParams(lp);
-//                        }
-//                    });
+                    String s="@"+strings[1]+":";
+                    liaotianEditView.setText(s);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            tihuan.removeAllViews();
+                            setViewDefaultColor();
+                            tihuan.addView(liaotian_layout);
+                            liaotian_btn.setBackgroundResource(R.color.yellow1);
+                            LayoutParams lp = liaotian_layout.getLayoutParams();
+                            lp.height = LinearLayout.LayoutParams.MATCH_PARENT;
+                            liaotian_layout.setLayoutParams(lp);
+                        }
+                    });
                 }else if(strings[0].equals("ServerYaoQin:")){
                     AlertDialog.Builder yaoqingDialog=new AlertDialog.Builder(FifthActivity.this);
                     yaoqingDialog.setTitle("提示");
@@ -373,13 +366,10 @@ public class FifthActivity extends FourFiveSixActivity {
                         }
                     });
                 }else if(strings[0].equals("ServerSiXin:")) {
-                    setSiXinDialog(strings[1]);
+                    sendSiXinFunction.setSiXinDialog(strings[1]);
                 }else if(strings[0].equals("ServerSendSiXin:")){
                         Log.e("FifctActivity","s="+strings[0]+strings[1]+strings[2]);
-                        GongGongZiYuan.siXins.add(new SiXin("From",strings[1],strings[2],strings[3]));
-
-                        io.outputFile(new File(getFilesDir(),GongGongZiYuan.client.getName()+XINXIANG).getAbsolutePath(),"From"+"/n"+strings[1]+"/n"+strings[2]+"/n"+strings[3]+"/n",true);
-
+                     sendSiXinFunction.jieshouSiXIn(strings[1],strings[2],strings[3]);
                 }
             }
         });
@@ -438,7 +428,7 @@ public class FifthActivity extends FourFiveSixActivity {
             public void onClick(View v) {
                 String data=liaotianEditView.getText().toString();
                 if(!data.equals("")){
-                    msgSend("liaotianxiaoxi:/n"+data+"/n0"+"_");
+                    gongGongZiYuan.sendMsg("liaotianxiaoxi:/n"+data+"/n0"+"_");
                     Log.e("Send","liaotianxiaoxi:/n"+data+"/n0"+"_");
                     liaotianEditView.setText("");
 
@@ -456,11 +446,7 @@ public class FifthActivity extends FourFiveSixActivity {
         });
     }
 
-    private void msgSend(String s){
-        Message msg=new Message();
-        msg.obj=s;
-        whandler.sendMessage(msg);
-    }
+
 
     /**
      * Dispatch onPause() to fragments.
