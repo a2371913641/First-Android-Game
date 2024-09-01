@@ -173,17 +173,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-//    public void storeAccount(){//储存账号密码
-//        if(jizhuzhanghao.isChecked()&&data.equals("OK")) {
-//            ioUtil.outputFile(new File(getFilesDir(),"账号名单").getAbsolutePath(),nuber.getText().toString()+"/n");
-//        }
-//
-//        if(jizhumima.isChecked()&&data.equals("OK")){
-//            ioUtil.createFile(new File(getFilesDir(),nuber.getText().toString()+"密码").getAbsolutePath());
-//            ioUtil.outputFile(new File(getFilesDir(),nuber.getText().toString()+"密码").getAbsolutePath(),admin.getText().toString());
-//        }
-//    }
-
     private void showAccount(){
         button_showAccount.setOnClickListener(new View.OnClickListener() {
             @Override

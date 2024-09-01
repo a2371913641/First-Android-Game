@@ -1,24 +1,20 @@
 package cn.itcast.gobang.AdapterUtil;
 
 import android.content.Context;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.TextView;
 
-import java.io.File;
 import java.util.List;
 
 import cn.itcast.gobang.R;
-import cn.itcast.gobang.Util.GongGongZiYuan;
-import cn.itcast.gobang.Util.IOUtil;
 import cn.itcast.gobang.Util.SiXin;
 
 public class XinXiangAdapter extends BaseAdapter {
     Context context;
-    List<SiXin> siXins;
+    public List<SiXin> siXins;
     SetHuiFu setHuiFu;
     SetXinXiangs setXinXiangs;
     ListViewSelection listViewSelection;
@@ -32,7 +28,7 @@ public class XinXiangAdapter extends BaseAdapter {
     }
 
     public interface SetXinXiangs{
-        void setXinXiangFile();
+        void resetXinXiangFile();
     }
 
 
@@ -86,7 +82,7 @@ public class XinXiangAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 siXins.remove(position);
-                setXinXiangs.setXinXiangFile();
+                setXinXiangs.resetXinXiangFile();
                 XinXiangAdapter.this.notifyDataSetChanged();
                 setListViewSelection(listViewSelection);
 
@@ -108,11 +104,13 @@ public class XinXiangAdapter extends BaseAdapter {
         name.setText(siXins.get(position).getName());
         content.setText(siXins.get(position).getContent());
         time.setText(siXins.get(position).getTime());
+        Log.e("XinXiangAdapter","convertView="+convertView.hashCode());
         return convertView;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+
         return setConverView(position,convertView);
     }
 

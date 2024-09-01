@@ -75,7 +75,7 @@ public class SixRoomActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_six_room);
         initView();
-        sendSiXinFunction=new SendSiXinFunction(SixRoomActivity.this,gongGongZiYuan,SixRoomActivity.this);
+        sendSiXinFunction=new SendSiXinFunction(SixRoomActivity.this,gongGongZiYuan,SixRoomActivity.this,null,null);
         haoYouListUpdate=new HaoYouListUpdate(haoyouList,SixRoomActivity.this);
         gongGongZiYuan.sendMsg("jinruRoom:/n_");
         setBiaoQingBaoList();
@@ -414,10 +414,10 @@ public class SixRoomActivity extends AppCompatActivity {
                         sendSiXinFunction.setSiXinDialog(strings[1]);
                         break;
                     case"ServerSendSiXin:":
-                        Log.e("Four","s="+strings[0]+strings[1]+strings[2]);
                         sendSiXinFunction.jieshouSiXIn(strings[1],strings[2],strings[3]);
                         break;
                     default:
+                        gongGongZiYuan.sendMsg(data+"_");
                         Log.e("SixRoomActivity","default:data="+data);
                 }
 

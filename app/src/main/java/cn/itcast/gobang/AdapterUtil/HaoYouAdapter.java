@@ -70,6 +70,8 @@ public class HaoYouAdapter extends ShowClientListAdapter {
         Button zhaoTa=xuanzeView.findViewById(R.id.four_haoyou_xuanze_zhaota);
         Button siLiao=xuanzeView.findViewById(R.id.four_haoyou_xuanze_siliao);
         Button siXin=xuanzeView.findViewById(R.id.four_haoyou_xuanze_sixin);
+        Button shanChuHaoYou=xuanzeView.findViewById(R.id.four_haoyou_xuanze_shanchu);
+
 
         zhaoTa.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,6 +91,13 @@ public class HaoYouAdapter extends ShowClientListAdapter {
             @Override
             public void onClick(View v) {
                 gongGongZiYuan.sendMsg("ClientSiXin:/n"+clientList.get(position).getZhanghao()+"_");
+            }
+        });
+
+        shanChuHaoYou.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gongGongZiYuan.sendMsg("ClientDeleteFriend:/n"+clientList.get(position).getZhanghao()+"_");
             }
         });
 

@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -51,7 +52,7 @@ public class FourthActivity extends AppCompatActivity {
     public GongGongZiYuan gongGongZiYuan;
     List<Client> haoyouList;
     int[] dating={0,0,0,0,0,0,0,0};
-    View ziliaoView,haoyouView,dadiangView,xinxiangView,jiazuView,sixinDialogView;
+    View ziliaoView,haoyouView,dadiangView,xinxiangView,jiazuView;
     ReceiveListener receiveListener;
     SendSiXinFunction sendSiXinFunction;
     HaoYouListUpdate haoYouListUpdate;
@@ -60,9 +61,9 @@ public class FourthActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fourth);
         initView();
-        sendSiXinFunction=new SendSiXinFunction(FourthActivity.this,gongGongZiYuan,FourthActivity.this);
+        sendSiXinFunction=new SendSiXinFunction(FourthActivity.this,gongGongZiYuan,FourthActivity.this,xinXiangAdapter,xinxiangListView);
         haoYouListUpdate=new HaoYouListUpdate(haoyouList,FourthActivity.this);
-        setSiXin();
+        sendSiXinFunction.setSiXin();
         setTiHuan();
 //        sendMessage(CREATE_ACTIVITY_OK+ "_");
         setHuiFu();
@@ -71,7 +72,7 @@ public class FourthActivity extends AppCompatActivity {
 
     private void initView(){
         io=new IOUtil();
-        haoyouList=new ArrayList<Client>();
+        haoyouList=new ArrayList();
         haoyou=(Button) findViewById(R.id.four_haoyou);
         ziliao=(Button) findViewById(R.id.four_ziliao);
         xinxiang=(Button) findViewById(R.id.four_xinxiang);
@@ -98,23 +99,9 @@ public class FourthActivity extends AppCompatActivity {
         haoYouAdapter=new HaoYouAdapter(FourthActivity.this,haoyouList);
         haoyouListView.setAdapter(haoYouAdapter);
         gongGongZiYuan=new GongGongZiYuan();
-    }
 
-    private void setSiXin(){
-        String s=io.inputFile(new File(getFilesDir(),GongGongZiYuan.client.getName()+XINXIANG).getAbsolutePath());
-        if(!s.isEmpty()){
-            String[] strings=s.split("/n");
-            Log.e("Four","s="+s);
+     }
 
-            for(int i=GongGongZiYuan.siXins.size()-1;i>=0;i--){
-                GongGongZiYuan.siXins.remove(GongGongZiYuan.siXins.get(i));
-            }
-            for(int i=0;i<strings.length;i=i+4){
-                GongGongZiYuan.siXins.add(new SiXin(strings[i],strings[i+1],strings[i+2],strings[i+3]));
-
-            }
-        }
-    }
 
     private void setSelection(){
         xinXiangAdapter.setListViewSelection(new XinXiangAdapter.ListViewSelection() {
@@ -143,8 +130,8 @@ public class FourthActivity extends AppCompatActivity {
     private void setXinXiangAdapter(){
         xinXiangAdapter.setSetXinxiang(new XinXiangAdapter.SetXinXiangs() {
             @Override
-            public void setXinXiangFile() {
-                setXinXiang();
+            public void resetXinXiangFile() {
+                sendSiXinFunction.setXinXiangFile();
                 setSelection();
             }
         });
@@ -196,6 +183,8 @@ public class FourthActivity extends AppCompatActivity {
                 xinxiang.setBackgroundResource(R.color.yellow1);
                 tiHuan.removeAllViews();
                 tiHuan.addView(xinxiangView);
+                xinxiangView.getLayoutParams().height = LinearLayout.LayoutParams.MATCH_PARENT;
+                xinxiangView.setLayoutParams(xinxiangView.getLayoutParams());
             }
         });
 
@@ -316,12 +305,6 @@ public class FourthActivity extends AppCompatActivity {
                         break;
                     case"ServerSiXin:":
                         sendSiXinFunction.setSiXinDialog(strings[1]);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                xinXiangAdapter.notifyDataSetChanged();
-                            }
-                        });
                         break;
                     case"ServerSendSiXin:":
                         sendSiXinFunction.jieshouSiXIn(strings[1],strings[2],strings[3]);
@@ -329,9 +312,13 @@ public class FourthActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 xinXiangAdapter.notifyDataSetChanged();
+                                xinxiangListView.setSelection(GongGongZiYuan.siXins.size()-1);
                             }
                         });
                         break;
+                    default:
+                        gongGongZiYuan.sendMsg(data+"_");
+                        Log.e("SixRoomActivity","default:data="+data);
 
                 }
             }
@@ -339,34 +326,10 @@ public class FourthActivity extends AppCompatActivity {
     }
 
 
-    /**
-     * Dispatch onPause() to fragments.
-     */
 
-    private void setXinXiang(){
-        if(GongGongZiYuan.siXins.size()!=0){
-            IOUtil io=new IOUtil();
-            io.deleteFile(new File(getFilesDir(),GongGongZiYuan.client.getName()+XINXIANG).getAbsolutePath());
-            for(SiXin siXin:GongGongZiYuan.siXins){
-                io.outputFile(new File(getFilesDir(),GongGongZiYuan.client.getName()+XINXIANG).getAbsolutePath(),
-                        siXin.getFromOrTo()+"/n"+siXin.getName()+"/n"+siXin.getContent()+"/n"+siXin.getTime()+"/n"
-                        ,true);
-            }
-        }else{
-            io.deleteFile(new File(getFilesDir(),GongGongZiYuan.client.getName()+XINXIANG).getAbsolutePath());
-        }
-        Log.e("Four","xinxiang="+io.inputFile(new File(getFilesDir(),GongGongZiYuan.client.getName()+XINXIANG).getAbsolutePath()));
-    }
     @Override
     protected void onPause() {
         super.onPause();
-//        if(GongGongZiYuan.siXins.size()!=0){
-//            for(SiXin siXin:GongGongZiYuan.siXins){
-//                io.outputFile(new File(getFilesDir(),GongGongZiYuan.client.getName()+XINXIANG).getAbsolutePath(),
-//                        siXin.getFromOrTo()+"/n"+siXin.getName()+"/n"+siXin.getContent()+"/n"+siXin.getTime()+"/n"
-//                        ,false);
-//            }
-//        }
         SocketClient.sInst.allDestoryListener();
     }
 
@@ -382,6 +345,7 @@ public class FourthActivity extends AppCompatActivity {
             @Override
             public void run() {
                 xinXiangAdapter.notifyDataSetChanged();
+                haoYouAdapter.notifyDataSetChanged();
                 xinxiangListView.setSelection(GongGongZiYuan.siXins.size()-1);
             }
         });

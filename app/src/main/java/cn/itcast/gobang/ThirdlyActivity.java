@@ -73,6 +73,7 @@ public class ThirdlyActivity extends AppCompatActivity {
                 if(strings[0].equals(MESSAGE_DUIZHAN)){
                     Intent intent=new Intent(ThirdlyActivity.this,FourthActivity.class);
                     startActivity(intent);
+                    Log.e("Thirdly","intent3-4");
                 }else if(strings[0].equals("tuichuyouxi:")){
                     runOnUiThread(new Runnable() {
                         @Override
@@ -94,10 +95,6 @@ public class ThirdlyActivity extends AppCompatActivity {
     }
     @Override
     public void onBackPressed() {
-//        Log.e("ThirdlyActivity","onBackPressed");
-//        gongGongZiYuan.sendMsg("wanquantuichu:_");
-//        GongGongZiYuan.notClientIsRun=true;
-//        SocketClient.sInst=null;
         super.onBackPressed();
     }
 
@@ -105,10 +102,7 @@ public class ThirdlyActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-//        Log.e("ThirdlyActivity","onStop");
-//        gongGongZiYuan.sendMsg("wanquantuichu:_");
-//        GongGongZiYuan.notClientIsRun=true;
-//        SocketClient.sInst=null;
+
         super.onStop();
     }
 

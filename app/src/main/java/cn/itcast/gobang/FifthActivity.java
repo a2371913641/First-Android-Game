@@ -80,7 +80,7 @@ public class FifthActivity extends AppCompatActivity {
         datinghaoma=oldintent.getIntExtra("datinghaoma",100);
         yonghuName=oldintent.getStringExtra("yonghuname");
         initView();
-        sendSiXinFunction=new SendSiXinFunction(FifthActivity.this,gongGongZiYuan,FifthActivity.this);
+        sendSiXinFunction=new SendSiXinFunction(FifthActivity.this,gongGongZiYuan,FifthActivity.this,null,null);
         liaoTianFunction=new LiaoTianFunction(FifthActivity.this);
         haoYouListUpdate=new HaoYouListUpdate(haoyouList,FifthActivity.this);
         Log.e("fifthActivity","initView后.roomlist="+roomList.size());
@@ -370,6 +370,8 @@ public class FifthActivity extends AppCompatActivity {
                 }else if(strings[0].equals("ServerSendSiXin:")){
                         Log.e("FifctActivity","s="+strings[0]+strings[1]+strings[2]);
                      sendSiXinFunction.jieshouSiXIn(strings[1],strings[2],strings[3]);
+                }else{
+                    gongGongZiYuan.sendMsg(data+"_");
                 }
             }
         });
@@ -463,6 +465,12 @@ public class FifthActivity extends AppCompatActivity {
        if(SocketClient.sInst.getListenerListSize()==0){
            setListener();
        }
+       runOnUiThread(new Runnable() {
+           @Override
+           public void run() {
+               haoYouAdapter.notifyDataSetChanged();
+           }
+       });
     }
 
     @Override
