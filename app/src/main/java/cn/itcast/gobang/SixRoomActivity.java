@@ -53,7 +53,7 @@ public class SixRoomActivity extends AppCompatActivity {
     TextView roomNameTextView;
     View haoyouView,liaotianView,diangeView,yaoqingView,biaoqingbaoView;
     LiaoTianAdapter liaoTianAdapter;
-    HaoYouAdapter haoYouAdapter;
+//    HaoYouAdapter haoYouAdapter;
     YaoQinAdapter yaoqingAdapter;
     List<LiaoTianXiaoXi> liaotianXiaoxiList;
     List<Integer> biaoqingbaolist;
@@ -92,10 +92,10 @@ public class SixRoomActivity extends AppCompatActivity {
         clientList=new ArrayList<>();
         yaoqingList=new ArrayList<>();
         haoyouList=new ArrayList<>();
-        haoYouAdapter=new HaoYouAdapter(this,haoyouList);
+//        haoYouAdapter=new HaoYouAdapter(this,haoyouList);
         haoyouView=View.inflate(this,R.layout.layout_four_haoyou,null);
         haoyouListView=haoyouView.findViewById(R.id.four_haoyou_listview);
-        haoyouListView.setAdapter(haoYouAdapter);
+//        haoyouListView.setAdapter(haoYouAdapter);
         biaoqingbaoDialog=new AlertDialog.Builder(SixRoomActivity.this);
         tihuanLayout=(LinearLayout)findViewById(R.id.six_tihuan_linearlayout);
         roomNameTextView=(TextView) findViewById(R.id.six_roonname_textview);
@@ -312,7 +312,7 @@ public class SixRoomActivity extends AppCompatActivity {
                     case"setHaoYouList:":
                         haoYouListUpdate.DeleteAll();
                         haoYouListUpdate.updateHaoYouList(strings);
-                        haoYouListUpdate.updateUIHaoYouList(haoYouAdapter);
+//                        haoYouListUpdate.updateUIHaoYouList(haoYouAdapter);
                         break;
                     case"serverAddFriend:":
                         AlertDialog.Builder builder=new AlertDialog.Builder(SixRoomActivity.this);

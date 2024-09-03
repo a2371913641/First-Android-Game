@@ -1,11 +1,15 @@
 package cn.itcast.gobang.Util;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.itcast.gobang.R;
+
 public class Client {
     String name,zhanghao,xinbie;
-    int image;
+    int image,xinbieImage;
     Boolean onLine;
     List<Client> haoyouList=new ArrayList<>();
     public Client(String name,String zhanghao,String xinbie,int image,Boolean onLine){
@@ -14,6 +18,20 @@ public class Client {
         this.xinbie=xinbie;
         this.image=image;
         this.onLine=onLine;
+        setXinbieImage();
+        Log.e("Client","xinbie="+xinbie);
+    }
+
+    public void setXinbieImage(){
+        if(xinbie.equals("boy")){
+            this.xinbieImage= R.mipmap.nan;
+        }else if(xinbie.equals("girl")){
+            this.xinbieImage=R.mipmap.nv;
+        }
+    }
+
+    public int getImage(){
+        return image;
     }
 
     public String getZhanghao(){
@@ -28,8 +46,8 @@ public class Client {
         return name;
     }
 
-    public int getImage(){
-        return image;
+    public int getXinbieImage(){
+        return xinbieImage;
     }
 
     public Boolean getOnLine(){

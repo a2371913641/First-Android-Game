@@ -3,26 +3,18 @@ package cn.itcast.gobang;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import cn.itcast.gobang.AdapterUtil.DaTingAdapter;
@@ -33,9 +25,7 @@ import cn.itcast.gobang.Util.Client;
 import cn.itcast.gobang.Util.GongGongZiYuan;
 import cn.itcast.gobang.AdapterUtil.HaoYouAdapter;
 import cn.itcast.gobang.Util.IOUtil;
-import cn.itcast.gobang.Util.SiXin;
 import cn.itcast.gobang.Util.SocketClient;
-import cn.itcast.gobang.Util.WriterThread;
 
 public class FourthActivity extends AppCompatActivity {
     String CREATE_ACTIVITY_OK="fourlyActivityOK";
@@ -226,7 +216,7 @@ public class FourthActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            ziliaoXinbie.setImageResource(GongGongZiYuan.client.getImage());
+                            ziliaoXinbie.setImageResource(GongGongZiYuan.client.getXinbieImage());
                             ziliaoName.setText(GongGongZiYuan.client.getName());
                         }
                     });
