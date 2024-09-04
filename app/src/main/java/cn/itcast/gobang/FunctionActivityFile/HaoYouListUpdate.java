@@ -1,6 +1,7 @@
 package cn.itcast.gobang.FunctionActivityFile;
 
 import android.app.Activity;
+import android.util.Log;
 
 import java.util.List;
 
@@ -23,6 +24,7 @@ public class HaoYouListUpdate {
     }
 
     public List<Client> updateHaoYouList(String[] strings) {
+        Log.e("HaoYouListUpdate","strings="+strings.length);
         for (int i = 1; i < strings.length; i = i + 5) {
             haoyouList.add(new Client(strings[i], strings[i + 1], strings[i + 2], Integer.parseInt(strings[i + 3]), Boolean.parseBoolean(strings[i + 4])));
         }
