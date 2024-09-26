@@ -11,8 +11,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/MyStyle">
-        <activity android:name=".SixRoomActivity"
-            android:screenOrientation="landscape"/>
+        <activity android:name=".WZQGameActivity"
+            android:screenOrientation="landscape">
+        </activity>
+        <activity
+            android:name=".SixRoomActivity"
+            android:screenOrientation="landscape" />
         <activity
             android:name=".FifthActivity"
             android:screenOrientation="landscape" />

@@ -8,7 +8,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -41,10 +43,11 @@ import cn.itcast.gobang.Util.SocketClient;
 
 public class SixRoomActivity extends AppCompatActivity {
     IOUtil io;
+    Handler handler;
     List<Client> clientList;
     List<Client> haoyouList;
     Boolean isFalse;
-    Button haoyou,liaotian,diange,yaoqing,sendLiaotianButton;
+    Button haoyou,liaotian,diange,yaoqing,sendLiaotianButton,startGame;
     ImageView biaoqingbaoButton;
     LinearLayout tihuanLayout;
     RoomClientRecycleAdapter roomClientRecycleAdapter;
@@ -82,11 +85,13 @@ public class SixRoomActivity extends AppCompatActivity {
         setLiaotian();
         setTihuanLayout();
         ImageClick();
+        setStartGame();
 
     }
 
     private void initView(){
         io=new IOUtil();
+        handler=new Handler();
 //        windowManager=getWindowManager();
         gongGongZiYuan=new GongGongZiYuan();
         clientList=new ArrayList<>();
@@ -127,6 +132,7 @@ public class SixRoomActivity extends AppCompatActivity {
         biaoqingbaoRecyclerView.setAdapter(biaoQingBaoAdapter);
         clickImageDialog=new Dialog(SixRoomActivity.this);
         setLiaoTianAdapter();
+        startGame=(Button) findViewById(R.id.start_game);
     }
 
     private void setBiaoQingBaoList(){
@@ -141,6 +147,15 @@ public class SixRoomActivity extends AppCompatActivity {
             biaoqingbaolist.add(R.mipmap.biaoqing8);
 
         }
+    }
+
+    private void setStartGame(){
+        startGame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gongGongZiYuan.sendMsg("ClientStartGame:_");
+            }
+        });
     }
 
     private void setLiaoTianAdapter(){
@@ -416,6 +431,20 @@ public class SixRoomActivity extends AppCompatActivity {
                         break;
                     case"ServerSendSiXin:":
                         sendSiXinFunction.jieshouSiXIn(strings[1],strings[2],strings[3]);
+                        break;
+
+                    case"ServerStartGame:":
+                        Intent intent=new Intent(SixRoomActivity.this,WZQGameActivity.class);
+                        startActivity(intent);
+                        break;
+
+                    case "ServerStopGameFromStarting:":
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(SixRoomActivity.this,strings[1],Toast.LENGTH_SHORT).show();
+                            }
+                        });
                         break;
                     default:
                         gongGongZiYuan.sendMsg(data+"_");

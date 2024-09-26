@@ -44,7 +44,7 @@ public class ReaderThread extends Thread {
                     Log.e("SocketClient", new String(buff, 0, len));
                     for (String s1 : strings) {
                         Log.e("SocketClient", "s1=" + s1);
-                        sendMsg(s1);
+                        sendServerMsg(s1);
                     }
                 }
             } while (!jieshu);
@@ -57,11 +57,13 @@ public class ReaderThread extends Thread {
 
     }
 
-    private void sendMsg(String s){
+    private void sendServerMsg(String s){
         for(ReceiveListener listener:listenerList){
             listener.onReceive(s);
         }
     }
+
+
 
     public void setJieshu(Boolean jieshu){
         this.jieshu=jieshu;

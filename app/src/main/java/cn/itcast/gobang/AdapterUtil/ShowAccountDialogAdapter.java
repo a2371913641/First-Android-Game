@@ -16,10 +16,11 @@ import java.io.File;
 import java.util.List;
 
 import cn.itcast.gobang.R;
+import cn.itcast.gobang.ServeActivity.ServeMain;
 import cn.itcast.gobang.Util.ClientAccount;
 import cn.itcast.gobang.Util.IOUtil;
 
-public class DialogAdapter extends BaseAdapter {
+public class ShowAccountDialogAdapter extends BaseAdapter {
 
     List<ClientAccount> accounts;
 
@@ -30,16 +31,22 @@ public class DialogAdapter extends BaseAdapter {
     EditText zhanghao,mima;
 
     public LayoutInflater inflater;
+    ServeMain serveMain;
 
 
-    public DialogAdapter(@NonNull Context context, int resource, @NonNull List objects, EditText zhanghao,
-                         EditText mima) {
-        this.accounts=objects;
+    public ShowAccountDialogAdapter(@NonNull Context context, int resource, EditText zhanghao,
+                                    EditText mima) {
         this.context=context;
         this.resource=resource;
         this.inflater=LayoutInflater.from(context);
         this.zhanghao=zhanghao;
         this.mima=mima;
+        serveMain=new ServeMain(context,null);
+        getAccounts();
+    }
+
+    private void getAccounts(){
+        this.accounts=serveMain.getClientAccount();
     }
 
 
@@ -91,7 +98,7 @@ public class DialogAdapter extends BaseAdapter {
      */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        DialogAdapter.this.notifyDataSetChanged();
+        ShowAccountDialogAdapter.this.notifyDataSetChanged();
         View view=inflater.inflate(resource,null);
         TextView name=(TextView) view.findViewById(R.id.item_account);
         Button delete=(Button)view.findViewById(R.id.button_dialog_delete_account);
@@ -107,10 +114,10 @@ public class DialogAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 Log.e("Adapter","MainActivity.accountList="+accounts.toString());
-                IOUtil ioUtil=new IOUtil();
-                ioUtil.deleteFile(new File(context.getFilesDir(),zhanghao.getText()+"密码").getAbsolutePath());
+                serveMain.deleteMiMa(accounts.get(position).getZhanghao());
                 accounts.remove(position);
-                DialogAdapter.this.notifyDataSetChanged();
+                serveMain.resetBaoCunAccount(accounts);
+                ShowAccountDialogAdapter.this.notifyDataSetChanged();
             }
         });
         return view;
