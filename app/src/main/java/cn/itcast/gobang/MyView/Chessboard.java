@@ -15,6 +15,7 @@ import java.util.Objects;
 
 import cn.itcast.gobang.Util.ChessBoardListener;
 import cn.itcast.gobang.Util.PiecesInformarion;
+import cn.itcast.gobang.WZQGameActivity;
 
 public class Chessboard extends View {
     Context context;
@@ -22,6 +23,7 @@ public class Chessboard extends View {
     Paint blackPaint,whitePaint;
     Canvas canvas;
     int i = 0;
+    boolean Apply=true;
     float[] drawChessBoard=new float[88];
     int min,max;
     HashMap<Integer, PiecesInformarion> chessPieces=new HashMap<>();
@@ -61,6 +63,11 @@ public class Chessboard extends View {
         whitePaint.setStrokeJoin(Paint.Join.ROUND);
     }
 
+    private boolean isApply(){
+       Apply=!Apply;
+       return Apply;
+    }
+
     //-1--null
     //0--白
     //1--黑
@@ -71,6 +78,7 @@ public class Chessboard extends View {
             }
         }
     }
+
 
     /**
      * Implement this to do your drawing.
@@ -110,16 +118,16 @@ public class Chessboard extends View {
         //横线
         for(int i=0;i<44;i=i+4){
             drawChessBoard[i]=(max-min)/2;
-            drawChessBoard[i+1]=0+(max-min)/10*i/4;
+            drawChessBoard[i+1]=0+min/10*(i/4);
             drawChessBoard[i+2]=(max-min)/2+min;
-            drawChessBoard[i+3]=0+(max-min)/10*i/4;
+            drawChessBoard[i+3]=0+min/10*(i/4);
         }
 
         //竖线
         for(int i=44;i<88;i=i+4){
-            drawChessBoard[i]=(max-min)/2+(i-44)/4*(max-min)/10;
+            drawChessBoard[i]=(max-min)/2+(i-44)/4*min/10;
             drawChessBoard[i+1]=0;
-            drawChessBoard[i+2]=(max-min)/2+(i-44)/4*(max-min)/10;
+            drawChessBoard[i+2]=(max-min)/2+(i-44)/4*min/10;
             drawChessBoard[i+3]=min;
         }
     }
@@ -141,21 +149,25 @@ public class Chessboard extends View {
 
         //触屏实时位置
 
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
 
-                if(event.getX()>=(max-min)/2&&(event.getX()<=(max-min)/2+min)) {
-                    Log.e(TAG, (max-min)/2+"<=x<="+((max-min)/2+min));
-                    resetChessPieces((int)event.getX(),(int)event.getY(),checkPieces(i));
-
-                }
-        }
+                        if (event.getX() >= (max - min) / 2 && (event.getX() <= (max - min) / 2 + min)) {
+                            Log.e(TAG, (max - min) / 2 + "<=x<=" + ((max - min) / 2 + min));
+                            if(Apply) {
+                                Log.e(TAG,"Apply="+Apply);
+                                resetChessPieces((int) event.getX(), (int) event.getY(), checkPieces(i));
+                            }else{
+                                Toast.makeText(context,"该对方下棋",Toast.LENGTH_SHORT).show();
+                            }
+                        }
+            }
 
         return super.onTouchEvent(event);
     }
 
 
-    public void resetChessPieces(int x,int y,int piecesColor){
+    private void resetChessPieces(int x,int y,int piecesColor){
         int resetX,resetY;
         if(((x-(max-min)/2)%(min/10))>=(min/20)){
             resetX= (((x-(max-min)/2)/(min/10))*(min/10)+(max-min)/2+(min/10));
@@ -184,6 +196,7 @@ public class Chessboard extends View {
                 chessBoardListener.onReceive("0/n"+((resetX - (max-min)/2) / (min/10))+"/n"+(resetY / (min/10)));
                 Log.e(TAG,"chessBoardPieces["+ ((resetX - (max-min)/2) / (min/10))+"]["+ (resetY / (min/10))+"]="+0);
             }
+            Log.e(TAG,"i="+i);
             i++;
 
         }else{
@@ -203,7 +216,10 @@ public class Chessboard extends View {
             chessBoardPieces[X][Y] = 0;
             chessPieces.put(i, new PiecesInformarion(0,resetX, resetY));
         }
+        Log.e(TAG,"i="+i);
         i++;
+        isApply();
+        Log.e(TAG,"drawRivalChessPiesces Apply="+Apply);
         invalidate();
 
     }
