@@ -80,7 +80,7 @@ public class SixRoomActivity extends AppCompatActivity {
         initView();
         sendSiXinFunction=new SendSiXinFunction(SixRoomActivity.this,gongGongZiYuan,SixRoomActivity.this,null,null);
         haoYouListUpdate=new HaoYouListUpdate(haoyouList,SixRoomActivity.this);
-        gongGongZiYuan.sendMsg("jinruRoom:/n_");
+        gongGongZiYuan.sendMsg("jinruRoom:/n"+"/n"+"_");
         setBiaoQingBaoList();
         setLiaotian();
         setTihuanLayout();
@@ -95,6 +95,7 @@ public class SixRoomActivity extends AppCompatActivity {
 //        windowManager=getWindowManager();
         gongGongZiYuan=new GongGongZiYuan();
         clientList=new ArrayList<>();
+        setClientList();
         yaoqingList=new ArrayList<>();
         haoyouList=new ArrayList<>();
         haoYouAdapter=new HaoYouAdapter(this,haoyouList);
@@ -145,6 +146,15 @@ public class SixRoomActivity extends AppCompatActivity {
             biaoqingbaolist.add(R.mipmap.biaoqing6);
             biaoqingbaolist.add(R.mipmap.biaoqing7);
             biaoqingbaolist.add(R.mipmap.biaoqing8);
+
+        }
+    }
+
+    private void setClientList(){
+        for(int i=0;i<6;i++){
+            Client client=new Client(null,null,"xx",R.mipmap.toumintupian,null);
+            client.setSeat(i);
+            clientList.add(client);
 
         }
     }
@@ -267,13 +277,25 @@ public class SixRoomActivity extends AppCompatActivity {
                 String[] strings=data.split("/n");
                 switch (strings[0]){
                     case "setInTheRoomClient:":
-                        for(int i=clientList.size()-1;i>=0;i--){
-                            clientList.remove(clientList.get(i));
+                        if (clientList.size() > 0) {
+                            clientList.subList(0, clientList.size()).clear();
+                        }
+                        setClientList();
+                        List<Client> clients=new ArrayList<>();
+                        for(int i=1;i<strings.length;i=i+6){
+                            Client client=new Client(strings[i], strings[i+1], strings[i+2], Integer.parseInt(strings[i+3]),Boolean.parseBoolean(strings[i+4]));
+                            client.setSeat(Integer.parseInt(strings[i+5]));
+                            clients.add(client);
                         }
 
-                        for(int i=1;i<strings.length;i=i+5){
-                            clientList.add(new Client(strings[i], strings[i+1], strings[i+2], Integer.parseInt(strings[i+3]),Boolean.parseBoolean(strings[i+4])));
+                        for(int i=0;i<clients.size();i++){
+                            Client nowClient,newClient;
+                            newClient=clients.get(i);
+                            nowClient=clientList.get(newClient.getSeat());
+                            nowClient.setSeat(newClient.getSeat());
+                            nowClient.setXinXi(newClient.getName(),newClient.getZhanghao(),newClient.getXinbie(),newClient.getImage(),newClient.getOnLine());
                         }
+
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {

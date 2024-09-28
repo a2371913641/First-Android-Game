@@ -63,10 +63,7 @@ public class Chessboard extends View {
         whitePaint.setStrokeJoin(Paint.Join.ROUND);
     }
 
-    private boolean isApply(){
-       Apply=!Apply;
-       return Apply;
-    }
+
 
     //-1--null
     //0--白
@@ -168,6 +165,7 @@ public class Chessboard extends View {
 
 
     private void resetChessPieces(int x,int y,int piecesColor){
+        Log.e(TAG,"resetChessPieces");
         int resetX,resetY;
         if(((x-(max-min)/2)%(min/10))>=(min/20)){
             resetX= (((x-(max-min)/2)/(min/10))*(min/10)+(max-min)/2+(min/10));
@@ -187,7 +185,6 @@ public class Chessboard extends View {
             if (piecesColor==1) {
                 chessBoardPieces[ ((resetX - (max-min)/2) / (min/10))][ (resetY / (min/10))] = 1;
                 chessPieces.put(i, new PiecesInformarion(1,resetX, resetY));
-
                 chessBoardListener.onReceive("1/n"+((resetX - (max-min)/2) / (min/10))+"/n"+(resetY / (min/10)));
                 Log.e(TAG,"chessBoardPieces["+ ((resetX - (max-min)/2) / (min/10))+"]["+ (resetY / (min/10))+"]="+1);
             } else {
@@ -198,6 +195,7 @@ public class Chessboard extends View {
             }
             Log.e(TAG,"i="+i);
             i++;
+            Apply=false;
 
         }else{
             Toast.makeText(context,"不能在重复的位置下棋",Toast.LENGTH_SHORT).show();
@@ -205,6 +203,7 @@ public class Chessboard extends View {
     }
 
     public void drawRivalChessPiesces(int Color,int X,int Y){
+        Log.e(TAG,"drawRivalChessPiesces");
         Log.e(TAG,Color+"/n"+X+"/n"+Y);
         int resetX,resetY;
         resetX=(max-min)/2+X*(min)/10;
@@ -218,7 +217,8 @@ public class Chessboard extends View {
         }
         Log.e(TAG,"i="+i);
         i++;
-        isApply();
+        Apply=true;
+
         Log.e(TAG,"drawRivalChessPiesces Apply="+Apply);
         invalidate();
 
