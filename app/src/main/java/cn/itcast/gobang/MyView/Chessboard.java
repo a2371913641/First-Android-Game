@@ -29,7 +29,7 @@ public class Chessboard extends View {
     HashMap<Integer, PiecesInformarion> chessPieces=new HashMap<>();
     ChessBoardListener chessBoardListener;
     //棋盘内的棋子布局
-    int[][] chessBoardPieces=new int[11][11];
+   public int[][] chessBoardPieces=new int[11][11];
 
    public void setChessBoardListener(ChessBoardListener chessBoardListener){
        this.chessBoardListener=chessBoardListener;
