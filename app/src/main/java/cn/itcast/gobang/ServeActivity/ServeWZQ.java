@@ -125,35 +125,64 @@ public class ServeWZQ {
         }
 
         //从右往左斜
-     for(int i=4;i<chessBoardPieces.length;i++){
-         for(int x=i,y=0;x>0&&y<chessBoardPieces.length-1;x--,y++){
-             if(chessBoardPieces[x][y]==chessBoardPieces[x-1][y=1]&&chessBoardPieces[x][y]!=-1){
-                 number++;
-                 Log.e(TAG,"number="+number);
-                 if(number>=5){
-                     return true;
-                 }
-             }
-         }
-         number=1;
-     }
 
-     for(int j=0;j<5-1;j++){
-         for(int x=chessBoardPieces.length-1,y=j;x>0&&y<5-1;x--,y++){
-             if(chessBoardPieces[x][y]==chessBoardPieces[x-1][y+1]&&chessBoardPieces[x][y]!=-1){
-                 number++;
-                 Log.e(TAG,"number="+number);
-                 if(number>=5){
-                     return true;
-                 }
-             }
-         }
-         number=1;
-     }
+        for(int x=0;x<chessBoardPieces.length-1;x++){
+            for(int y=0,a=x;y<x&&a>0;y++,a--){
+                if(a<chessBoardPieces.length-1&&y>=0&&y<chessBoardPieces.length-1){
+                    if(chessBoardPieces[a][y]==chessBoardPieces[a-1][y+1]&&chessBoardPieces[a][y]!=-1){
+                        number++;
+                        Log.e(TAG,"内1number="+number+"  "+chessBoardPieces[a][y]);
+                        if(number>=5){
+                            return true;
+                        }
+                    }
+                }
+            }
+            number=1;
+        }
+
+        for(int x=1;x<chessBoardPieces.length-1;x++){
+            for (int a=x,y=chessBoardPieces.length-1;a<chessBoardPieces.length-1&&y>x;a++,y--){
+                if(a>=1&&a<chessBoardPieces.length-1&&y<=chessBoardPieces.length-1&&y>x){
+                    if(chessBoardPieces[a][y]==chessBoardPieces[a+1][y-1]&&chessBoardPieces[a][y]!=-1){
+                        number++;
+                        Log.e(TAG,"内1number="+number+"  "+chessBoardPieces[a][y]);
+                        if(number>=5){
+                            return true;
+                        }
+                    }
+                }
+            }
+            number=1;
+        }
+
         //从左往右斜
 
+        for(int y=chessBoardPieces.length-1;y>=0;y--){
+            for(int x=0,a=y;a<chessBoardPieces.length-1;x++,a++){
+                    if(chessBoardPieces[x][a]==chessBoardPieces[x+1][a+1]&&chessBoardPieces[x][a]!=-1){
+                        number++;
+                        if(number>=5){
+                            return true;
+                        }
+                }
+            }
+            number=1;
+        }
 
+        for(int x=1;x<chessBoardPieces.length-1;x++){
+            for(int a=x,y=0;a<chessBoardPieces.length-1&&y<chessBoardPieces.length-1;a++,y++){
+                if(chessBoardPieces[a][y]==chessBoardPieces[a+1][y+1]&&chessBoardPieces[a][y]!=-1){
+                    number++;
+                    if(number>=5){
+                        return true;
+                    }
+                }
+            }
+            number=1;
+        }
 
+        Log.e(TAG,"外number="+number);
 
         return false;
     }
