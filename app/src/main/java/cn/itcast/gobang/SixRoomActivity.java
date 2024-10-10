@@ -42,6 +42,7 @@ import cn.itcast.gobang.Util.Room;
 import cn.itcast.gobang.Util.SocketClient;
 
 public class SixRoomActivity extends AppCompatActivity {
+    String TAG="SixRoomActivity";
     IOUtil io;
     Handler handler;
     List<Client> clientList;
@@ -160,10 +161,21 @@ public class SixRoomActivity extends AppCompatActivity {
     }
 
     private void setStartGame(){
+
         startGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                gongGongZiYuan.sendMsg("ClientStartGame:_");
+                switch (startGame.getText().toString()){
+                    case"开始游戏":
+                        gongGongZiYuan.sendMsg("ClientStartGame:_");
+                        break;
+                    case"已准备":
+                        gongGongZiYuan.sendMsg("ClientReserve:_");
+                        break;
+                    case "取消准备":
+                        gongGongZiYuan.sendMsg("ClientCancelReserve:_");
+                        break;
+                }
             }
         });
     }
@@ -282,9 +294,10 @@ public class SixRoomActivity extends AppCompatActivity {
                         }
                         setClientList();
                         List<Client> clients=new ArrayList<>();
-                        for(int i=1;i<strings.length;i=i+6){
+                        for(int i=1;i<strings.length;i=i+7){
                             Client client=new Client(strings[i], strings[i+1], strings[i+2], Integer.parseInt(strings[i+3]),Boolean.parseBoolean(strings[i+4]));
                             client.setSeat(Integer.parseInt(strings[i+5]));
+                            client.setClientState(strings[i+6]);
                             clients.add(client);
                         }
 
@@ -293,6 +306,7 @@ public class SixRoomActivity extends AppCompatActivity {
                             newClient=clients.get(i);
                             nowClient=clientList.get(newClient.getSeat());
                             nowClient.setSeat(newClient.getSeat());
+                            nowClient.setClientState(newClient.getClientState());
                             nowClient.setXinXi(newClient.getName(),newClient.getZhanghao(),newClient.getXinbie(),newClient.getImage(),newClient.getOnLine());
                         }
 
@@ -314,6 +328,27 @@ public class SixRoomActivity extends AppCompatActivity {
                             }
                         });
                         break;
+                    case"ServerClientState:":
+                        GongGongZiYuan.client.setClientState(strings[1]);
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                switch (GongGongZiYuan.client.getClientState()){
+                                    case "房主":
+                                        startGame.setText("开始游戏");
+                                        break;
+                                    case "已准备":
+                                        startGame.setText("取消准备");
+                                        break;
+                                    case "未准备":
+                                        startGame.setText("已准备");
+                                        break;
+                                }
+                            }
+                        });
+                        break;
+
                     case "InTheRoomliaotianxiaoxi:":
                             liaotianXiaoxiList.add(new LiaoTianXiaoXi(strings[1],Integer.parseInt(strings[2])));
 
@@ -412,7 +447,7 @@ public class SixRoomActivity extends AppCompatActivity {
                         AlertDialog.Builder builder3=new AlertDialog.Builder(SixRoomActivity.this);
                         builder3.setTitle("找Ta");
                         builder3.setMessage("用户名称:"+strings[1]+"\n"+"是否在线:"+strings[2]+"\n"+"大厅名称:大厅"+strings[3]+"\n"+"房间号码:"+strings[4]+
-                                "\n"+"房间名称:"+strings[5]+"\n房间模式:"+strings[6]+"\n有无密码:"+strings[7]);
+                                "\n"+"房间名称:"+strings[5]+"\n房间模式:"+strings[6]+"\n有无密码:"+strings[7]+"\n用户状态:" + strings[8]);
                         builder3.setNegativeButton("确认",null);
                         runOnUiThread(new Runnable() {
                             @Override

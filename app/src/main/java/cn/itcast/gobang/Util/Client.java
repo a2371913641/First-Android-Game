@@ -8,7 +8,7 @@ import java.util.List;
 import cn.itcast.gobang.R;
 
 public class Client {
-    String name, zhanghao, xinbie;
+    String name, zhanghao, xinbie,clientState;
     int image, xinbieImage, seat;
     Boolean onLine;
     List<Client> haoyouList = new ArrayList<>();
@@ -74,5 +74,13 @@ public class Client {
 
     public int getSeat(){
         return seat;
+    }
+
+    public void setClientState(String clientState){
+        this.clientState=clientState;
+    }
+
+    public String getClientState(){
+        return clientState;
     }
 }

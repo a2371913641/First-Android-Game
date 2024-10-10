@@ -266,7 +266,7 @@ public class FourthActivity extends AppCompatActivity {
                         AlertDialog.Builder builder3=new AlertDialog.Builder(FourthActivity.this);
                         builder3.setTitle("找Ta");
                         builder3.setMessage("用户名称:"+strings[1]+"\n"+"是否在线:"+strings[2]+"\n"+"大厅名称:大厅"+strings[3]+"\n"+"房间号码:"+strings[4]+
-                                "\n"+"房间名称:"+strings[5]+"\n房间模式:"+strings[6]+"\n有无密码:"+strings[7]);
+                                "\n"+"房间名称:"+strings[5]+"\n房间模式:"+strings[6]+"\n有无密码:"+strings[7]+"\n用户状态:" + strings[8]);
                         builder3.setPositiveButton("进入Ta所在大厅", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
