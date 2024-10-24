@@ -171,9 +171,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         Log.e("Main","onDestroy()");
-        if(SocketClient.sInst!=null) {
+        if(SocketClient.getInst()!=null) {
             gongGongZiYuan.sendMsg("wanquantuichu:_");
-            SocketClient.sInst.destroyLintener(receiveListener);
+            SocketClient.getInst().destroyLintener(receiveListener);
         }
         super.onDestroy();
     }

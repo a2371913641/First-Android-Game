@@ -19,6 +19,7 @@ import cn.itcast.gobang.MyView.WhiteChessPiecesView;
 import cn.itcast.gobang.ServeActivity.ServeWZQ;
 import cn.itcast.gobang.Util.ChessBoardListener;
 import cn.itcast.gobang.Util.GongGongZiYuan;
+import cn.itcast.gobang.Util.SocketClient;
 
 
 public class WZQGameActivity extends AppCompatActivity {
@@ -61,8 +62,12 @@ public class WZQGameActivity extends AppCompatActivity {
     }
 
 
-
-
-
-
+    /**
+     * Dispatch onPause() to fragments.
+     */
+    @Override
+    protected void onPause() {
+        serveWZQ.outGame();
+        super.onPause();
+    }
 }

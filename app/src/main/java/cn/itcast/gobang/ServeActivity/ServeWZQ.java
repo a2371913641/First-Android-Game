@@ -21,6 +21,7 @@ public class ServeWZQ {
     Chessboard chessboard;
     Handler WZQGaneActivityHandler;
     ChessBoardListener chessBoardListener;
+    WZQListener wzqListener;
     GongGongZiYuan gongGongZiYuan=new GongGongZiYuan();
 
     public ServeWZQ(Context context, Chessboard chessboard,Handler handler){
@@ -28,7 +29,8 @@ public class ServeWZQ {
         this.chessboard=chessboard;
         this.WZQGaneActivityHandler=handler;
         setChessBoardListener();
-        setWZQListener(new WZQListener());
+        wzqListener=new WZQListener();
+        setWZQListener(wzqListener);
     }
 
     private void setChessBoardListener(){
@@ -66,7 +68,7 @@ public class ServeWZQ {
     }
 
     private void setWZQListener(WZQListener wzqListener){
-        SocketClient.sInst.addListener(wzqListener);
+        SocketClient.getInst().addListener(wzqListener);
     }
 
     class WZQListener implements ReceiveListener{
@@ -187,4 +189,12 @@ public class ServeWZQ {
         return false;
     }
 
+    public void outGame(){
+            gongGongZiYuan.sendMsg("ClientReturnRoom:_");
+            SocketClient.getInst().allDestoryListener();
+            if(chessBoardListener!=null){
+                chessBoardListener=null;
+            }
+            Log.e(TAG,"outGame,sInst.size="+SocketClient.getInst().getListenerListSize());
+    }
 }

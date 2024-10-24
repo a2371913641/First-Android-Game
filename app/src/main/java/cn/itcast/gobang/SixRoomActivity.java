@@ -48,14 +48,14 @@ public class SixRoomActivity extends AppCompatActivity {
     List<Client> clientList;
     List<Client> haoyouList;
     Boolean isFalse;
-    Button haoyou,liaotian,diange,yaoqing,sendLiaotianButton,startGame;
+    Button haoyou,liaotian,diange,yaoqing,sendLiaotianButton,startGame,selectTeam;
     ImageView biaoqingbaoButton;
     LinearLayout tihuanLayout;
     RoomClientRecycleAdapter roomClientRecycleAdapter;
     RecyclerView roomClientRecyclerView;
     public GongGongZiYuan gongGongZiYuan;
     TextView roomNameTextView;
-    View haoyouView,liaotianView,diangeView,yaoqingView,biaoqingbaoView;
+    View haoyouView,liaotianView,diangeView,yaoqingView,biaoqingbaoView,closeSeatView;
     LiaoTianAdapter liaoTianAdapter;
     HaoYouAdapter haoYouAdapter;
     YaoQinAdapter yaoqingAdapter;
@@ -74,19 +74,26 @@ public class SixRoomActivity extends AppCompatActivity {
     SendSiXinFunction sendSiXinFunction;
     HaoYouListUpdate haoYouListUpdate;
 
+
+    View teamView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_six_room);
+        setReceiveListener();
         initView();
         sendSiXinFunction=new SendSiXinFunction(SixRoomActivity.this,gongGongZiYuan,SixRoomActivity.this,null,null);
         haoYouListUpdate=new HaoYouListUpdate(haoyouList,SixRoomActivity.this);
-        gongGongZiYuan.sendMsg("jinruRoom:/n"+"/n"+"_");
+        gongGongZiYuan.sendMsg("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx_");
+        gongGongZiYuan.sendMsg("jinruRoom:_");
+        Log.e(TAG,"onCreate()");
         setBiaoQingBaoList();
         setLiaotian();
         setTihuanLayout();
         ImageClick();
         setStartGame();
+        setSelectTeam();
 
     }
 
@@ -118,6 +125,7 @@ public class SixRoomActivity extends AppCompatActivity {
         biaoqingbaoView=View.inflate(SixRoomActivity.this,R.layout.layout_five_baioqingbao_dialog,null);
         yaoqingView=View.inflate(SixRoomActivity.this,R.layout.layout_four_haoyou,null);
         yaoqingAdapter=new YaoQinAdapter(SixRoomActivity.this,yaoqingList);
+        closeSeatView=View.inflate(SixRoomActivity.this,R.layout.layout_six_close_seat,null);
         yaoqingListView=yaoqingView.findViewById(R.id.four_haoyou_listview);
         yaoqingListView.setAdapter(yaoqingAdapter);
         liaotianView=View.inflate(SixRoomActivity.this,R.layout.layout_five_dating_liaotian,null);
@@ -135,7 +143,12 @@ public class SixRoomActivity extends AppCompatActivity {
         clickImageDialog=new Dialog(SixRoomActivity.this);
         setLiaoTianAdapter();
         startGame=(Button) findViewById(R.id.start_game);
+        {
+            selectTeam = (Button) findViewById(R.id.six_selectTeam);
+            teamView = View.inflate(SixRoomActivity.this, R.layout.layout_six_team, null);
+        }
     }
+
 
     private void setBiaoQingBaoList(){
         for(int i=0;i<4;i++){
@@ -160,6 +173,45 @@ public class SixRoomActivity extends AppCompatActivity {
         }
     }
 
+    private void setSelectTeam(){
+        teamView = View.inflate(SixRoomActivity.this, R.layout.layout_six_team, null);
+        setSelectTeamFunction(teamView);
+        AlertDialog.Builder DialogBuilder = new AlertDialog.Builder(SixRoomActivity.this);
+        AlertDialog teamDialog=DialogBuilder.setView(teamView).create();
+        selectTeam.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                teamDialog.show();
+            }
+        });
+    }
+
+    private void setSelectTeamFunction(View teamView){
+        TextView redTeam=(TextView) teamView.findViewById(R.id.team_red);
+        TextView blueTeam=(TextView) teamView.findViewById(R.id.team_blue);
+        TextView yellowTeam=(TextView) teamView.findViewById(R.id.team_yellow);
+        redTeam.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gongGongZiYuan.sendMsg("ClientInitiativeSetTeam:/n"+"红队_");
+            }
+        });
+
+        blueTeam.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gongGongZiYuan.sendMsg("ClientInitiativeSetTeam:/n"+"蓝队_");
+            }
+        });
+
+        yellowTeam.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gongGongZiYuan.sendMsg("ClientInitiativeSetTeam:/n"+"黄队_");
+            }
+        });
+    }
+
     private void setStartGame(){
 
         startGame.setOnClickListener(new View.OnClickListener() {
@@ -169,7 +221,7 @@ public class SixRoomActivity extends AppCompatActivity {
                     case"开始游戏":
                         gongGongZiYuan.sendMsg("ClientStartGame:_");
                         break;
-                    case"已准备":
+                    case"准备":
                         gongGongZiYuan.sendMsg("ClientReserve:_");
                         break;
                     case "取消准备":
@@ -282,7 +334,7 @@ public class SixRoomActivity extends AppCompatActivity {
     }
 
     private void setReceiveListener(){
-        SocketClient.sInst.addListener(receiveListener=new ReceiveListener() {
+        SocketClient.getInst().addListener(receiveListener=new ReceiveListener() {
             @Override
             public void onReceive(String data) {
                 Log.e("SixRoomActivity","data="+data);
@@ -294,19 +346,23 @@ public class SixRoomActivity extends AppCompatActivity {
                         }
                         setClientList();
                         List<Client> clients=new ArrayList<>();
-                        for(int i=1;i<strings.length;i=i+7){
+                        for(int i=1;i<strings.length;i=i+8){
                             Client client=new Client(strings[i], strings[i+1], strings[i+2], Integer.parseInt(strings[i+3]),Boolean.parseBoolean(strings[i+4]));
                             client.setSeat(Integer.parseInt(strings[i+5]));
                             client.setClientState(strings[i+6]);
+                            client.setTeam(strings[i+7]);
+                            Log.e(TAG,"strings[i+7]="+strings[i+7]);
+                            Log.e(TAG,"client.getTeam"+client.getTeam());
                             clients.add(client);
                         }
 
-                        for(int i=0;i<clients.size();i++){
-                            Client nowClient,newClient;
+                        for(int i=0;i<clients.size();i++){ Client nowClient,newClient;
                             newClient=clients.get(i);
                             nowClient=clientList.get(newClient.getSeat());
                             nowClient.setSeat(newClient.getSeat());
+                            Log.e(TAG,"seat="+newClient.getSeat());
                             nowClient.setClientState(newClient.getClientState());
+                            nowClient.setTeam(newClient.getTeam());
                             nowClient.setXinXi(newClient.getName(),newClient.getZhanghao(),newClient.getXinbie(),newClient.getImage(),newClient.getOnLine());
                         }
 
@@ -342,7 +398,7 @@ public class SixRoomActivity extends AppCompatActivity {
                                         startGame.setText("取消准备");
                                         break;
                                     case "未准备":
-                                        startGame.setText("已准备");
+                                        startGame.setText("准备");
                                         break;
                                 }
                             }
@@ -580,7 +636,7 @@ public class SixRoomActivity extends AppCompatActivity {
            WindowManager.LayoutParams lp=dialogWindow.getAttributes();
            dialogWindow.setGravity(Gravity.LEFT|Gravity.TOP);
            Log.e("Six","position="+position);
-           lp.x=300*(position+1);
+           lp.x=300*((position+1)%3==0? 3:(position+1)%3);
            lp.y=680*(position/3);
            lp.height=270;
            lp.width=470;
@@ -591,18 +647,34 @@ public class SixRoomActivity extends AppCompatActivity {
            siLiaoButton.setVisibility(View.GONE);
            addFriendButton.setVisibility(View.GONE);
            siXinButton.setVisibility(View.GONE);
-       }else{
+       }else if(!GongGongZiYuan.client.getZhanghao().equals(clientList.get(position).getZhanghao())&&
+               clientList.get(position).getZhanghao()!=null&&!clientList.get(position).getZhanghao().equals("null")){
            Log.e("Six","!!!!!!!====");
            clickImageDialog.setContentView(clickImageDialogView);
            Window dialogWindow=clickImageDialog.getWindow();
            WindowManager.LayoutParams lp=dialogWindow.getAttributes();
            dialogWindow.setGravity(Gravity.LEFT|Gravity.TOP);
            Log.e("Six","position="+position);
-           lp.x=300*(position+1);
+           lp.x=300*((position+1)%3==0? 3:(position+1)%3);
            lp.y=680*(position/3);
            lp.height=820;
            lp.width=470;
            setDialogClick(clickImageDialogView,position);
+           dialogWindow.setAttributes(lp);
+           clickImageDialog.create();
+           clickImageDialog.show();
+       }else{
+           //关闭该位置
+           clickImageDialog.setContentView(closeSeatView);
+           Window dialogWindow=clickImageDialog.getWindow();
+           WindowManager.LayoutParams lp=dialogWindow.getAttributes();
+           dialogWindow.setGravity(Gravity.LEFT|Gravity.TOP);
+           Log.e("Six","position="+position);
+           lp.x=300*((position+1)%3==0? 3:(position+1)%3);
+           lp.y=680*(position/3);
+           lp.height=270;
+           lp.width=470;
+           setCloseSeat(closeSeatView,position);
            dialogWindow.setAttributes(lp);
            clickImageDialog.create();
            clickImageDialog.show();
@@ -649,6 +721,33 @@ public class SixRoomActivity extends AppCompatActivity {
         });
     }
 
+    private void setCloseSeat(View closeStateView,int position){
+        Button switchOnOff=(Button) closeStateView.findViewById(R.id.six_room_on_off);
+        Log.e(TAG,"Client.xinbie="+clientList.get(position).getXinbie());
+        if(clientList.get(position).getXinbie().equals("off")){
+            switchOnOff.setText("打开房间");
+
+        }else{
+            switchOnOff.setText("关闭房间");
+        }
+
+        switchOnOff.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(switchOnOff.getText().equals("打开房间")){
+                    gongGongZiYuan.sendMsg("ClientOnRoom:/n"+clientList.get(position).getSeat()+"_");
+                    Log.e(TAG,"ClientOnRoom:/n\"+clientList.get(position).getSeat()="+clientList.get(position).getSeat());
+
+
+                }else {
+                    gongGongZiYuan.sendMsg("ClientOffRoom:/n"+clientList.get(position).getSeat()+"_");
+                    Log.e(TAG,"ClientOffRoom:/n\"+clientList.get(position).getSeat()="+clientList.get(position).getSeat());
+                }
+
+            }
+        });
+    }
+
 //    private void setTuichuRoomDialog(){
 //        tuichuRoomDialog=new AlertDialog.Builder(SixRoomActivity.this);
 //        tuichuRoomDialog.setTitle("提示");
@@ -681,23 +780,42 @@ public class SixRoomActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        setReceiveListener();
 
     }
 
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        Log.e(TAG,"onResume0000000，sInst.size="+SocketClient.getInst().getListenerListSize());
+        if(SocketClient.getInst().getListenerListSize()==0){
+            Log.e(TAG,"onResume1111，sInst.size="+SocketClient.getInst().getListenerListSize());
+            setReceiveListener();
+            gongGongZiYuan.sendMsg("ClientResetRoomClientState:_");
+        }
+        liaotianXiaoxiList.clear();
+        Log.e(TAG,"onResume，sInst.size="+SocketClient.getInst().getListenerListSize());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                liaoTianAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
-        SocketClient.sInst.allDestoryListener();
+        if(SocketClient.getInst().getListenerListSize()!=0){
+            SocketClient.getInst().allDestoryListener();
+        }
+
+        Log.e(TAG,"onPause，sInst.size="+SocketClient.getInst().getListenerListSize());
     }
 
     @Override
     protected void onDestroy() {
         gongGongZiYuan.sendMsg("tuichuRoom:_");
-        if(SocketClient.sInst!=null){
-            SocketClient.sInst.destroyLintener(receiveListener);
-        }
         super.onDestroy();
     }
 }

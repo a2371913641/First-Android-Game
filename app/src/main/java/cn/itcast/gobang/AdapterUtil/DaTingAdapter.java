@@ -11,17 +11,20 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.io.IOException;
+
 import cn.itcast.gobang.R;
-import cn.itcast.gobang.Util.WriterThread;
+import cn.itcast.gobang.Util.GongGongZiYuan;
 
 public class DaTingAdapter<Content> extends BaseAdapter {
     Context context;
     int[] datings;
-    Handler whandler= WriterThread.wHandler;
+    GongGongZiYuan gongGongZiYuan;
 
     public DaTingAdapter(Context context, int[] datins){
         this.context=context;
         this.datings=datins;
+        this.gongGongZiYuan=new GongGongZiYuan();
     }
 
     @Override
@@ -55,10 +58,7 @@ public class DaTingAdapter<Content> extends BaseAdapter {
             if(isFull(position)){
                 isFullDialog(true,position);
             }else {
-                Message msg = new Message();
-                msg.obj = "jinrudating:/n" + position+ "_";
-                whandler.sendMessage(msg);
-                Log.e("FourActivity", "Msg.obj=" + msg.obj);
+                gongGongZiYuan.sendMsg("jinrudating:/n" + position+ "_");
                 DaTingAdapter.this.notifyDataSetChanged();
             }
         }

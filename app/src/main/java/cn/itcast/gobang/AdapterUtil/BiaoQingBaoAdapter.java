@@ -13,13 +13,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import cn.itcast.gobang.R;
-import cn.itcast.gobang.Util.WriterThread;
+import cn.itcast.gobang.Util.GongGongZiYuan;
+import cn.itcast.gobang.Util.Writer;
 
 public class BiaoQingBaoAdapter extends RecyclerView.Adapter <BiaoQingBaoAdapter.BiaoQingHolder> {
     Context context;
-    Handler whandler= WriterThread.wHandler;
     List list;
     String s;
+    GongGongZiYuan gongGongZiYuan;
 
 
 
@@ -27,6 +28,7 @@ public class BiaoQingBaoAdapter extends RecyclerView.Adapter <BiaoQingBaoAdapter
         this.context=context;
         this.list=list;
         this.s=s;
+        gongGongZiYuan=new GongGongZiYuan();
     }
 
     class BiaoQingHolder extends RecyclerView.ViewHolder{
@@ -47,9 +49,7 @@ public class BiaoQingBaoAdapter extends RecyclerView.Adapter <BiaoQingBaoAdapter
             @Override
             public void onClick(View v) {
                 int position=holder.getAdapterPosition();
-                Message msg=new Message();
-                msg.obj=s+"/n"+" /n"+list.get(position)+"_";
-                whandler.sendMessage(msg);
+                gongGongZiYuan.sendMsg(s+"/n"+" /n"+list.get(position)+"_");
             }
         });
         return holder;

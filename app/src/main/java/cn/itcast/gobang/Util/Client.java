@@ -8,7 +8,7 @@ import java.util.List;
 import cn.itcast.gobang.R;
 
 public class Client {
-    String name, zhanghao, xinbie,clientState;
+    String name, zhanghao, xinbie,clientState,team;
     int image, xinbieImage, seat;
     Boolean onLine;
     List<Client> haoyouList = new ArrayList<>();
@@ -28,7 +28,9 @@ public class Client {
             this.xinbieImage = R.mipmap.nan;
         } else if (xinbie.equals("girl")) {
             this.xinbieImage = R.mipmap.nv;
-        }else{
+        }else  if(xinbie.equals("off")) {
+            this.xinbieImage=R.mipmap.closeroom;
+        } else {
             this.xinbieImage=R.mipmap.toumintupian;
         }
     }
@@ -83,4 +85,13 @@ public class Client {
     public String getClientState(){
         return clientState;
     }
+
+    public void setTeam(String s){
+        this.team=s;
+    }
+
+    public String getTeam(){
+        return team;
+    }
+
 }

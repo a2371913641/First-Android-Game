@@ -14,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import cn.itcast.gobang.Util.GongGongZiYuan;
 import cn.itcast.gobang.Util.SocketClient;
-import cn.itcast.gobang.Util.WriterThread;
 
 public class SecondActivity extends AppCompatActivity {
 
@@ -35,7 +34,6 @@ public class SecondActivity extends AppCompatActivity {
     }
 
     private void initView(){
-        whandler= WriterThread.wHandler;
         zhanghao=(EditText) findViewById(R.id.two_nuber);
         mima=(EditText) findViewById(R.id.two_admin);
         name=(EditText) findViewById(R.id.two_name);
@@ -51,11 +49,8 @@ public class SecondActivity extends AppCompatActivity {
         zhuce.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(SocketClient.sInst==null){
-                    SocketClient.sInst=new SocketClient();
-                    SocketClient.sInst.start();
 
-                }
+                SocketClient.getInst().setStart();
                 setReceiveListener();
                 if(zhanghao.getText().length()>6&&mima.getText().length()>5&&name.getText().length()>1&&(boy.isChecked()||girl.isChecked())){
                     if(mima.getText().toString().equals(queren.getText().toString())){
@@ -81,7 +76,7 @@ public class SecondActivity extends AppCompatActivity {
     }
 
     private void setReceiveListener(){
-        SocketClient.sInst.addListener(receiveListener=new ReceiveListener() {
+        SocketClient.getInst().addListener(receiveListener=new ReceiveListener() {
             @Override
             public void onReceive(String data) {
                 runOnUiThread(new Runnable() {
@@ -91,8 +86,8 @@ public class SecondActivity extends AppCompatActivity {
                         if(strings[0].equals("zhucejieguo:")){
                             Toast.makeText(SecondActivity.this,strings[1],Toast.LENGTH_SHORT).show();
                         }
-                        SocketClient.sInst.setEnd();
-                        SocketClient.sInst=null;
+                        SocketClient.getInst().setEnd();
+                        SocketClient.getInst().allDestoryListener();
                     }
                 });
             }
@@ -111,9 +106,7 @@ public class SecondActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        if(SocketClient.sInst!=null){
-            SocketClient.sInst.destroyLintener(receiveListener);
-        }
+        SocketClient.getInst().destroyLintener(receiveListener);
         super.onDestroy();
     }
 }

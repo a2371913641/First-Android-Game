@@ -1,5 +1,6 @@
 package cn.itcast.gobang;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,6 +11,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -41,10 +43,9 @@ import cn.itcast.gobang.Util.LiaoTianXiaoXi;
 import cn.itcast.gobang.Util.Room;
 import cn.itcast.gobang.Util.RoomListAdapter;
 import cn.itcast.gobang.Util.SocketClient;
-import cn.itcast.gobang.Util.WriterThread;
 
 public class FifthActivity extends AppCompatActivity {
-
+    String TAG="FifthActivity";
     Intent oldintent;
     int datinghaoma;
     String yonghuName;
@@ -86,6 +87,7 @@ public class FifthActivity extends AppCompatActivity {
         Log.e("fifthActivity","initView后.roomlist="+roomList.size());
         setBiaoQingBaoList();
         setListener();
+        gongGongZiYuan.sendMsg("FifthActivity5555555555555555555555555555_");
         gongGongZiYuan.sendMsg("4-5:/n_");
         setCreateRoom();
         setTihuan();
@@ -93,9 +95,12 @@ public class FifthActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
+        super.onCreate(savedInstanceState, persistentState);
+    }
 
     private void initView(){
-        whandler= WriterThread.wHandler;
         Log.e("FifthActivity","onCreate.initView()");
         roomList=new ArrayList<>();
         clients=new ArrayList<>();
@@ -214,7 +219,7 @@ public class FifthActivity extends AppCompatActivity {
     }
 
     private void setListener(){
-        SocketClient.sInst.addListener(receiveListener=new ReceiveListener() {
+        SocketClient.getInst().addListener(receiveListener=new ReceiveListener() {
             @Override
             public void onReceive(String data) {
                 Log.e("FifthActivity","data==========="+data);
@@ -454,18 +459,23 @@ public class FifthActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        SocketClient.sInst.allDestoryListener();
+        SocketClient.getInst().allDestoryListener();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-       if(SocketClient.sInst.getListenerListSize()==0){
+        Log.e(TAG,"onResume,sInst.size0000="+SocketClient.getInst().getListenerListSize());
+       if(SocketClient.getInst().getListenerListSize()==0){
+           Log.e(TAG,"onResume,sInst.size1111="+SocketClient.getInst().getListenerListSize());
            setListener();
        }
+       liaoTianXiaoXiList.clear();
+        Log.e(TAG,"onResume,sInst.size2222="+SocketClient.getInst().getListenerListSize());
        runOnUiThread(new Runnable() {
            @Override
            public void run() {
+               liaotianAdapter.notifyDataSetChanged();
                haoYouAdapter.notifyDataSetChanged();
            }
        });
@@ -475,8 +485,8 @@ public class FifthActivity extends AppCompatActivity {
     protected void onDestroy() {
 
         gongGongZiYuan.sendMsg("tuichudating:/n");
-        if(SocketClient.sInst!=null){
-            SocketClient.sInst.destroyLintener(receiveListener);
+        if(SocketClient.getInst().getListenerListSize()!=0){
+            SocketClient.getInst().destroyLintener(receiveListener);
         }
         super.onDestroy();
     }

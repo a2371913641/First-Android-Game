@@ -3,6 +3,7 @@ package cn.itcast.gobang;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -28,6 +29,7 @@ import cn.itcast.gobang.Util.IOUtil;
 import cn.itcast.gobang.Util.SocketClient;
 
 public class FourthActivity extends AppCompatActivity {
+    String TAG="FourthActivity";
     String CREATE_ACTIVITY_OK="fourlyActivityOK";
     String XINXIANG="的信箱.txt";
     Button haoyou,ziliao,xinxiang,dadang,jiazu,ziliaoHuanyijian,ziliaoZaixianjiangli;
@@ -46,11 +48,13 @@ public class FourthActivity extends AppCompatActivity {
     ReceiveListener receiveListener;
     SendSiXinFunction sendSiXinFunction;
     HaoYouListUpdate haoYouListUpdate;
+    Handler FourHandler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fourth);
         initView();
+        addListener();
         sendSiXinFunction=new SendSiXinFunction(FourthActivity.this,gongGongZiYuan,FourthActivity.this,xinXiangAdapter,xinxiangListView);
         haoYouListUpdate=new HaoYouListUpdate(haoyouList,FourthActivity.this);
         sendSiXinFunction.setSiXin();
@@ -61,6 +65,7 @@ public class FourthActivity extends AppCompatActivity {
     }
 
     private void initView(){
+        FourHandler=new Handler();
         io=new IOUtil();
         haoyouList=new ArrayList();
         haoyou=(Button) findViewById(R.id.four_haoyou);
@@ -205,7 +210,7 @@ public class FourthActivity extends AppCompatActivity {
 
 
     private void addListener(){
-        SocketClient.sInst.addListener(receiveListener=new ReceiveListener() {
+        SocketClient.getInst().addListener(receiveListener=new ReceiveListener() {
             @Override
             public void onReceive(String data) {
                 String[] strings=data.split("/n");
@@ -241,11 +246,17 @@ public class FourthActivity extends AppCompatActivity {
                         haoYouListUpdate.updateUIHaoYouList(haoYouAdapter);
                         break;
                     case "jinrudating:":
-                        Log.e("Four","jinruDating--------");
-                        Intent intent = new Intent(FourthActivity.this, FifthActivity.class);
-                        intent.putExtra("datinghaoma",Integer.parseInt(strings[1]));
-                        intent.putExtra("yonghuname",ziliaoName.getText());
-                        startActivity(intent);
+                        FourHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Log.e("Four","jinruDating--------");
+                                Intent intent = new Intent(FourthActivity.this, FifthActivity.class);
+                                intent.putExtra("datinghaoma",Integer.parseInt(strings[1]));
+                                intent.putExtra("yonghuname",ziliaoName.getText());
+                                startActivity(intent);
+                            }
+                        });
+
                         break;
                     case "dating:":
                         for (int i = 1; i < strings.length; i++) {
@@ -320,16 +331,19 @@ public class FourthActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        SocketClient.sInst.allDestoryListener();
+        Log.e(TAG,"onPaise");
+        SocketClient.getInst().allDestoryListener();
     }
 
     @Override
     protected void onStop() {
+        Log.e(TAG,"onStop");
         super.onStop();
     }
 
     @Override
     protected void onResume() {
+        Log.e(TAG,"onResume");
         super.onResume();
         runOnUiThread(new Runnable() {
             @Override
@@ -339,7 +353,9 @@ public class FourthActivity extends AppCompatActivity {
                 xinxiangListView.setSelection(GongGongZiYuan.siXins.size()-1);
             }
         });
-        addListener();
+        if(SocketClient.getInst().getListenerListSize()==0){
+            addListener();
+        }
         gongGongZiYuan.sendMsg(CREATE_ACTIVITY_OK+ "_");
     }
 
@@ -349,9 +365,7 @@ public class FourthActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        if(SocketClient.sInst!=null){
-            SocketClient.sInst.destroyLintener(receiveListener);
-        }
+        Log.e(TAG,"onDestory");
         super.onDestroy();
     }
 }

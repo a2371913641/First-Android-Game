@@ -18,7 +18,7 @@ import cn.itcast.gobang.Util.ClientAccount;
 import cn.itcast.gobang.Util.GongGongZiYuan;
 import cn.itcast.gobang.Util.IOReadWrite;
 import cn.itcast.gobang.Util.SocketClient;
-import cn.itcast.gobang.Util.WriterThread;
+
 
 public class ServeMain {
     String TAG="ServerMain";
@@ -40,14 +40,12 @@ public class ServeMain {
                 if (optionsR != null) optionsR.run();
                 Intent intent=new Intent(context, ThirdlyActivity.class);
                 context.startActivity(intent);
-            }else{
                 MainActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         Toast.makeText(context, data, Toast.LENGTH_SHORT).show();
                     }
                 });
-
             }
             if(strings[0].equals("denglu:")) {
                 MainActivity.runOnUiThread(new Runnable() {
@@ -68,8 +66,8 @@ public class ServeMain {
                 });
 
 
-                SocketClient.sInst.setEnd();
-                SocketClient.sInst=null;
+                SocketClient.getInst().setEnd();
+                SocketClient.getInst().allDestoryListener();
             }
 
             if(strings[0].equals("setClient:")){
@@ -81,7 +79,7 @@ public class ServeMain {
 
     //监听器处理消息
     private void setReceiveListener(){
-        SocketClient.sInst.addListener(loginListener);
+        SocketClient.getInst().addListener(loginListener);
     }
 
     public ServeMain(Context context,Activity activity){
@@ -97,14 +95,14 @@ public class ServeMain {
 
     private void connectServer(){
         Log.e(TAG,"connectServer()");
-        if(SocketClient.sInst!=null){
-            SocketClient.sInst.setEnd();
-            SocketClient.sInst.allDestoryListener();
-            SocketClient.sInst = null;
+        Log.e(TAG,"SocketClient.getInst().getIsStart()="+SocketClient.getInst().getIsStart());
+        if(SocketClient.getInst().getIsStart()!=0){
+            SocketClient.getInst().setEnd();
+            SocketClient.getInst().allDestoryListener();
         }
 
-        SocketClient.sInst=new SocketClient();
-        SocketClient.sInst.start();
+
+        SocketClient.getInst().setStart();
 
     }
 

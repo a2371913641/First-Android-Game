@@ -19,6 +19,7 @@ import cn.itcast.gobang.R;
 import cn.itcast.gobang.Util.Client;
 
 public class RoomClientRecycleAdapter extends RecyclerView.Adapter<RoomClientRecycleAdapter.RoomClientHolder> {
+    String TAG="RoomClientRecycleAdapter";
     Context context;
     List<Client> clientList;
     private ClickInterface clickInterface;
@@ -44,14 +45,14 @@ public class RoomClientRecycleAdapter extends RecyclerView.Adapter<RoomClientRec
     static class RoomClientHolder extends RecyclerView.ViewHolder {
         View view;
         ImageView clientImageView;
-        TextView nameTextView;
-        TextView clicntState;
+        TextView nameTextView,clicntState,setTeam;
         public RoomClientHolder(@NonNull View itemView) {
             super(itemView);
             this.view=itemView;
             this.clientImageView=(ImageView) view.findViewById(R.id.six_room_client_Image);
             this.nameTextView=(TextView) view.findViewById(R.id.six_room_client_name);
             this.clicntState=(TextView) view.findViewById(R.id.six_room_client_state);
+            this.setTeam=(TextView) view.findViewById(R.id.six_room_client_team);
         }
     }
 
@@ -64,13 +65,43 @@ public class RoomClientRecycleAdapter extends RecyclerView.Adapter<RoomClientRec
 
     @Override
     public void onBindViewHolder(@NonNull RoomClientHolder holder, int position) {
+//        Client nowClient=null;
+//        for(Client client:clientList) {
+//        if(client.getSeat()==position)
+//        }
         holder.nameTextView.setText(clientList.get(position).getName());
         holder.clientImageView.setImageResource(clientList.get(position).getXinbieImage());
         holder.clicntState.setText(clientList.get(position).getClientState());
-        //判断字符串是否为空用长度
-        if(holder.clicntState.getText().length()!=0){
+        holder.setTeam.setText(clientList.get(position).getTeam());
+        Log.e(TAG,"外getTeam()="+clientList.get(position).getTeam());
+//        判断字符串是否为空用长度
+        if(clientList.get(position).getClientState()!=null){
+            Log.e(TAG,"clicntState.getText().length()="+holder.clicntState.getText().length()+";clicntState.getText()="+holder.clicntState.getText());
             holder.clicntState.setBackgroundColor(context.getResources().getColor(R.color.yellow1));
+        } else {
+            //如果是null,则取消背景颜色
+            holder.clicntState.setBackgroundColor(context.getResources().getColor(R.color.lucency));
         }
+
+        if(clientList.get(position).getTeam()!=null) {
+            Log.e(TAG,"getTeam="+clientList.get(position).getTeam());
+            switch (clientList.get(position).getTeam()) {
+                case "红队":
+                    holder.setTeam.setBackgroundColor(context.getResources().getColor(R.color.red));
+                    break;
+                case "蓝队":
+                    holder.setTeam.setBackgroundColor(context.getResources().getColor(R.color.blue));
+                    break;
+                case "黄队":
+                    holder.setTeam.setBackgroundColor(context.getResources().getColor(R.color.yellow1));
+                    break;
+            }
+        }else{
+            Log.e(TAG,"getTeam==null");
+            //如果是null,则取消背景颜色
+            holder.setTeam.setBackgroundColor(context.getResources().getColor(R.color.lucency));
+        }
+
         Log.e("Six","clientList.get(position).getImage()="+clientList.get(position).getXinbieImage());
         holder.clientImageView.setOnClickListener(new View.OnClickListener() {
             @Override

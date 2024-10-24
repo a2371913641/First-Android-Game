@@ -14,12 +14,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import cn.itcast.gobang.Util.GongGongZiYuan;
 import cn.itcast.gobang.Util.SiXin;
 import cn.itcast.gobang.Util.SocketClient;
-import cn.itcast.gobang.Util.WriterThread;
+
 
 public class ThirdlyActivity extends AppCompatActivity {
     String MESSAGE_DUIZHAN="3-4";
     Button duizhan;
-    Handler whandler;
     GongGongZiYuan gongGongZiYuan;
     ReceiveListener receiveListener;
 
@@ -33,7 +32,6 @@ public class ThirdlyActivity extends AppCompatActivity {
     }
 
     private void initView(){
-        whandler= WriterThread.wHandler;
         duizhan=(Button) findViewById(R.id.three_duizhan);
         gongGongZiYuan=new GongGongZiYuan();
     }
@@ -42,9 +40,7 @@ public class ThirdlyActivity extends AppCompatActivity {
         duizhan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Message msg=new Message();
-                msg.obj=MESSAGE_DUIZHAN+ "_";
-                whandler.sendMessage(msg);
+              gongGongZiYuan.sendMsg(MESSAGE_DUIZHAN+ "_");
             }
         });
     }
@@ -66,7 +62,7 @@ public class ThirdlyActivity extends AppCompatActivity {
     }
 
     private void ReceiveListener(){
-        SocketClient.sInst.addListener( receiveListener=new ReceiveListener() {
+        SocketClient.getInst().addListener( receiveListener=new ReceiveListener() {
             @Override
             public void onReceive(String data) {
                 String[] strings=data.split("/n");
@@ -81,14 +77,9 @@ public class ThirdlyActivity extends AppCompatActivity {
                             Toast.makeText(ThirdlyActivity.this, strings[1], Toast.LENGTH_SHORT).show();
                         }
                     });
-                    SocketClient.sInst.setEnd();
-                    if(SocketClient.sInst!=null){
-                        SocketClient.sInst.allDestoryListener();
-                    }
-                    SocketClient.sInst=null;
-                    if(SocketClient.sInst==null){
-                        Log.e("Thirdly","Socket.sInst=null");
-                    }
+                    SocketClient.getInst().setEnd();
+                    SocketClient.getInst().allDestoryListener();
+
                 }
             }
         });

@@ -15,30 +15,36 @@ import cn.itcast.gobang.ReceiveListener;
 
 
 public class ReaderThread extends Thread {
+    String TAG="ReaderThread";
     Socket socket;
+    SocketClient socketClient;
     volatile boolean jieshu=false;
     List<ReceiveListener> listenerList;
 
 
     static final int MainActivityMsg=1;
     static final int ThirdlyActivity=2;
-    public ReaderThread(Socket socket,  List<ReceiveListener> listenerList) {
+    public ReaderThread(SocketClient socketClient,  List<ReceiveListener> listenerList) {
         super();
-        this.socket = socket;
-
+        this.socketClient = socketClient;
         this.listenerList=listenerList;
+        Log.e(TAG,"ReaderThread");
     }
 
     @Override
     public void run() {
         try {
+            //该处再次判空（网络异常）
+            if(socket==null) {
+                this.socket = socketClient.initSocket();
+                Log.e(TAG, "socketClient="+socketClient.hashCode()+",socket=" + socket.hashCode());
+            }
 
             InputStream is = socket.getInputStream();
             byte[] buff = new byte[1024];
             do {
                 int len = is.read(buff);
                 if (len > 0) {
-                    Message msg = new Message();
                     String s = new String(buff, 0, len);
                     String[] strings = s.split("_");
                     Log.e("SocketClient", new String(buff, 0, len));
@@ -58,8 +64,10 @@ public class ReaderThread extends Thread {
     }
 
     private void sendServerMsg(String s){
+        Log.e(TAG,"s="+s);
         for(ReceiveListener listener:listenerList){
             listener.onReceive(s);
+            Log.e(TAG,"listener="+listener.hashCode());
         }
     }
 
