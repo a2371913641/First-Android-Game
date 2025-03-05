@@ -95,6 +95,9 @@ public class RoomClientRecycleAdapter extends RecyclerView.Adapter<RoomClientRec
                 case "黄队":
                     holder.setTeam.setBackgroundColor(context.getResources().getColor(R.color.yellow1));
                     break;
+                case "null":
+                    holder.setTeam.setBackgroundColor(context.getResources().getColor(R.color.white));
+                    break;
             }
         }else{
             Log.e(TAG,"getTeam==null");

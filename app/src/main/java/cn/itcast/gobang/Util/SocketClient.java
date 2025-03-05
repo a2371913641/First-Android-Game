@@ -64,7 +64,7 @@ public class SocketClient {
                 //192.168.137.81
                 //172.22.60.128
                 //192.168.53.56
-                socket = new Socket("192.168.0.100", 8088);
+                socket = new Socket("192.168.0.102", 8088);
                 Log.e("SocketClient", "衣联网1,socket=" + socket.hashCode());
             } catch (IOException e) {
                 e.printStackTrace();
